@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intelligence Oracle</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:         #0A0A0F;
+  --surface:    #13131A;
+  --surface2:   #1C1C28;
+  --surface3:   #22222F;
+  --border:     #2A2A3A;
+  --border-hi:  #3A3A52;
+  --accent:     #4A6FA5;
+  --accent-hi:  #6B8FCC;
+  --text:       #F0EEE8;
+  --text-dim:   #8A8899;
+  --text-faint: #3A3A50;
+  --green:      #3D7A5F;
+  --green-hi:   #52A87F;
+  --amber:      #A07840;
+  --amber-hi:   #C89A52;
+  --red:        #8A3A3A;
+  --red-hi:     #C85A5A;
+  --purple:     #6A5A9A;
+  --purple-hi:  #9A8ACC;
+  --gold:       #8A7030;
+  --gold-hi:    #C4A84A;
+  --teal:       #2A7070;
+  --teal-hi:    #3AACAC;
+  --sage:       #3A6B50;
+  --sage-hi:    #5AA878;
+  --lavender:   #5A4A8A;
+  --lavender-hi:#8A78CC;
+  --rose:       #7A3A5A;
+  --rose-hi:    #B86090;
+  --steel:      #3A5A7A;
+  --steel-hi:   #5A8AB0;
+  --coral:      #7A4A3A;
+  --coral-hi:   #B87A5A;
+  --forest:     #3A5A3A;
+  --forest-hi:  #5A9A5A;
+  --indigo:     #3A3A7A;
+  --indigo-hi:  #6A6AB0;
+  --bronze:     #6A4A2A;
+  --bronze-hi:  #B07840;
+  --cyan:       #2A6A6A;
+  --cyan-hi:    #3AACAC;
+  --olive:      #4A5A2A;
+  --olive-hi:   #7A9A3A;
+  --slate:      #4A4A6A;
+  --slate-hi:   #7A7AAA;
+  --terra:      #5A3A2A;
+  --terra-hi:   #9A6A4A;
+  --moss:       #2A4A3A;
+  --moss-hi:    #4A8A6A;
+  --silver:     #4A4A5A;
+  --silver-hi:  #8A8AAA;
+  --burgundy:   #5A2A3A;
+  --burgundy-hi:#9A4A6A;
+  --navy:       #2A3A5A;
+  --navy-hi:    #4A6AAA;
+  --ember:      #6A3A2A;
+  --ember-hi:   #AA6A4A;
+}
+html, body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+
+/* ── TABS ── */
+.tab-bar { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 100; }
+.tab { font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 14px 22px; border: none; background: none; color: var(--text-dim); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; letter-spacing: 0.04em; }
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--accent-hi); border-bottom-color: var(--accent); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── LAYOUT ── */
+.shell { max-width: 760px; margin: 0 auto; padding: 40px 24px 96px; }
+
+/* ── HEADER ── */
+header { margin-bottom: 44px; }
+.wordmark { font-size: 11px; font-weight: 500; letter-spacing: 0.18em; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
+h1 { font-family: 'IBM Plex Serif', serif; font-size: 30px; font-weight: 500; line-height: 1.25; color: var(--text); margin-bottom: 8px; }
+.subtitle { font-size: 13px; color: var(--text-dim); max-width: 540px; line-height: 1.65; }
+
+/* ── SECTION LABELS ── */
+.section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--text-faint); text-transform: uppercase; margin-bottom: 10px; }
+
+/* ── ROUTING SUGGESTION ── */
+.routing-bar { background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 4px; padding: 10px 14px; margin-bottom: 20px; font-size: 12px; color: var(--text-dim); display: none; line-height: 1.5; }
+.routing-bar.visible { display: block; }
+.routing-bar strong { color: var(--accent-hi); }
+
+/* ── DOMAIN HEADERS ── */
+.domain-block { margin-bottom: 24px; }
+.domain-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; cursor: pointer; user-select: none; }
+.domain-toggle { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 10px; border-radius: 2px; border: 1px solid; }
+.domain-toggle.arbitrage { color: var(--amber-hi); border-color: var(--amber); background: rgba(160,120,64,0.1); }
+.domain-toggle.ai        { color: var(--accent-hi); border-color: var(--accent); background: rgba(74,111,165,0.1); }
+.domain-toggle.neuro     { color: var(--green-hi);  border-color: var(--green);  background: rgba(61,122,95,0.1); }
+.domain-toggle.excellence{ color: var(--purple-hi); border-color: var(--purple); background: rgba(106,90,154,0.1); }
+.domain-toggle.execution { color: var(--red-hi);    border-color: var(--red);    background: rgba(138,58,58,0.1); }
+.domain-toggle.ceiling   { color: var(--gold-hi);   border-color: var(--gold);   background: rgba(138,112,48,0.1); }
+.domain-toggle.power      { color: var(--teal-hi);    border-color: var(--teal);      background: rgba(42,112,112,0.1); }
+.domain-toggle.longevity  { color: var(--sage-hi);    border-color: var(--sage);      background: rgba(58,107,80,0.1); }
+.domain-toggle.holistic   { color: var(--lavender-hi);border-color: var(--lavender);  background: rgba(90,74,138,0.1); }
+.domain-toggle.naturopathic { color: var(--rose-hi);    border-color: var(--rose);      background: rgba(122,58,90,0.1); }
+.domain-toggle.decision    { color: var(--steel-hi);   border-color: var(--steel);     background: rgba(58,90,122,0.1); }
+.domain-toggle.military    { color: var(--coral-hi);   border-color: var(--coral);     background: rgba(122,74,58,0.1); }
+.domain-toggle.psychology  { color: var(--forest-hi);  border-color: var(--forest);    background: rgba(58,90,58,0.1); }
+.domain-toggle.philosophy  { color: var(--indigo-hi);  border-color: var(--indigo);    background: rgba(58,58,122,0.1); }
+.domain-toggle.geopolitics  { color: var(--amber-hi);  border-color: var(--amber);    background: rgba(160,120,64,0.1); }
+.domain-toggle.business     { color: var(--bronze-hi); border-color: var(--bronze);   background: rgba(106,74,42,0.1); }
+.domain-toggle.technology   { color: var(--cyan-hi);   border-color: var(--cyan);     background: rgba(42,106,106,0.1); }
+.domain-toggle.creativity   { color: var(--olive-hi);  border-color: var(--olive);    background: rgba(74,90,42,0.1); }
+.domain-toggle.economics    { color: var(--slate-hi);  border-color: var(--slate);    background: rgba(74,74,106,0.1); }
+.domain-toggle.communication{ color: var(--terra-hi);  border-color: var(--terra);    background: rgba(90,58,42,0.1); }
+.domain-toggle.anthropology { color: var(--moss-hi);   border-color: var(--moss);     background: rgba(42,74,58,0.1); }
+.domain-toggle.environment  { color: var(--green-hi);  border-color: var(--green);    background: rgba(61,122,95,0.1); }
+.domain-toggle.learning      { color: var(--accent-hi);  border-color: var(--accent);    background: rgba(74,111,165,0.1); }
+.domain-toggle.mathematics   { color: var(--silver-hi);  border-color: var(--silver);    background: rgba(74,74,90,0.1); }
+.domain-toggle.law           { color: var(--burgundy-hi);border-color: var(--burgundy);  background: rgba(90,42,58,0.1); }
+.domain-toggle.medicine      { color: var(--navy-hi);    border-color: var(--navy);      background: rgba(42,58,90,0.1); }
+.domain-toggle.performance   { color: var(--ember-hi);   border-color: var(--ember);     background: rgba(106,58,42,0.1); }
+.domain-toggle.custom    { color: var(--text-dim);  border-color: var(--border); background: var(--surface2); }
+.domain-toggle.inactive  { opacity: 0.35; }
+.domain-select-all { font-size: 11px; color: var(--text-faint); cursor: pointer; margin-left: auto; }
+.domain-select-all:hover { color: var(--text-dim); }
+
+/* ── THINKER PILLS ── */
+.thinker-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.thinker-pill { font-size: 12px; color: var(--text-dim); background: var(--surface); border: 1px solid var(--border); border-radius: 3px; padding: 4px 10px; cursor: pointer; transition: all 0.12s; user-select: none; }
+.thinker-pill:hover { color: var(--text); border-color: var(--border-hi); }
+.thinker-pill.selected { color: var(--text); border-color: var(--border-hi); background: var(--surface2); }
+.thinker-pill.selected.arbitrage { color: var(--amber-hi); border-color: var(--amber); background: rgba(160,120,64,0.12); }
+.thinker-pill.selected.ai        { color: var(--accent-hi); border-color: var(--accent); background: rgba(74,111,165,0.12); }
+.thinker-pill.selected.neuro     { color: var(--green-hi);  border-color: var(--green);  background: rgba(61,122,95,0.12); }
+.thinker-pill.selected.excellence{ color: var(--purple-hi); border-color: var(--purple); background: rgba(106,90,154,0.12); }
+.thinker-pill.selected.execution { color: var(--red-hi);    border-color: var(--red);    background: rgba(138,58,58,0.12); }
+.thinker-pill.selected.ceiling   { color: var(--gold-hi);   border-color: var(--gold);      background: rgba(138,112,48,0.12); }
+.thinker-pill.selected.power      { color: var(--teal-hi);    border-color: var(--teal);      background: rgba(42,112,112,0.12); }
+.thinker-pill.selected.longevity  { color: var(--sage-hi);    border-color: var(--sage);      background: rgba(58,107,80,0.12); }
+.thinker-pill.selected.holistic   { color: var(--lavender-hi);border-color: var(--lavender);  background: rgba(90,74,138,0.12); }
+.thinker-pill.selected.naturopathic { color: var(--rose-hi);    border-color: var(--rose);      background: rgba(122,58,90,0.12); }
+.thinker-pill.selected.decision    { color: var(--steel-hi);   border-color: var(--steel);     background: rgba(58,90,122,0.12); }
+.thinker-pill.selected.military    { color: var(--coral-hi);   border-color: var(--coral);     background: rgba(122,74,58,0.12); }
+.thinker-pill.selected.psychology  { color: var(--forest-hi);  border-color: var(--forest);    background: rgba(58,90,58,0.12); }
+.thinker-pill.selected.philosophy  { color: var(--indigo-hi);  border-color: var(--indigo);    background: rgba(58,58,122,0.12); }
+.thinker-pill.selected.geopolitics  { color: var(--amber-hi);  border-color: var(--amber);    background: rgba(160,120,64,0.12); }
+.thinker-pill.selected.business     { color: var(--bronze-hi); border-color: var(--bronze);   background: rgba(106,74,42,0.12); }
+.thinker-pill.selected.technology   { color: var(--cyan-hi);   border-color: var(--cyan);     background: rgba(42,106,106,0.12); }
+.thinker-pill.selected.creativity   { color: var(--olive-hi);  border-color: var(--olive);    background: rgba(74,90,42,0.12); }
+.thinker-pill.selected.economics    { color: var(--slate-hi);  border-color: var(--slate);    background: rgba(74,74,106,0.12); }
+.thinker-pill.selected.communication{ color: var(--terra-hi);  border-color: var(--terra);    background: rgba(90,58,42,0.12); }
+.thinker-pill.selected.anthropology { color: var(--moss-hi);   border-color: var(--moss);     background: rgba(42,74,58,0.12); }
+.thinker-pill.selected.environment  { color: var(--green-hi);  border-color: var(--green);    background: rgba(61,122,95,0.12); }
+.thinker-pill.selected.learning      { color: var(--accent-hi);  border-color: var(--accent);    background: rgba(74,111,165,0.12); }
+.thinker-pill.selected.mathematics   { color: var(--silver-hi);  border-color: var(--silver);    background: rgba(74,74,90,0.12); }
+.thinker-pill.selected.law           { color: var(--burgundy-hi);border-color: var(--burgundy);  background: rgba(90,42,58,0.12); }
+.thinker-pill.selected.medicine      { color: var(--navy-hi);    border-color: var(--navy);      background: rgba(42,58,90,0.12); }
+.thinker-pill.selected.performance   { color: var(--ember-hi);   border-color: var(--ember);     background: rgba(106,58,42,0.12); }
+.thinker-pill.selected.custom    { color: var(--text);      border-color: var(--border-hi); background: var(--surface3); }
+.thinker-pill.suggested { box-shadow: 0 0 0 1px var(--accent); }
+
+/* ── QUESTION ── */
+.input-block { margin-bottom: 20px; position: relative; }
+textarea { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: 'IBM Plex Serif', serif; font-size: 16px; line-height: 1.65; padding: 16px 18px; resize: vertical; min-height: 110px; outline: none; transition: border-color 0.15s; }
+textarea::placeholder { color: var(--text-faint); font-style: italic; }
+textarea:focus { border-color: var(--accent); }
+
+/* ── LIVE PREVIEW ── */
+.live-preview { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 14px 16px; font-family: 'IBM Plex Serif', serif; font-size: 12px; line-height: 1.7; color: var(--text-faint); white-space: pre-wrap; max-height: 200px; overflow-y: auto; margin-bottom: 20px; display: none; }
+.live-preview.has-content { display: block; color: var(--text-dim); }
+.preview-label { font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--text-faint); text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+.preview-count { font-weight: 400; letter-spacing: 0; }
+
+/* ── MODEL ROW ── */
+.model-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+.row-label { font-size: 11px; color: var(--text-dim); font-weight: 500; letter-spacing: 0.06em; margin-right: 4px; white-space: nowrap; min-width: 48px; }
+.model-btn { font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 5px 13px; border-radius: 3px; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); cursor: pointer; transition: all 0.15s; }
+.model-btn:hover { color: var(--text); border-color: var(--border-hi); }
+.model-btn.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* ── DEPTH ROW ── */
+.depth-row { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+.depth-btn { font-family: 'IBM Plex Sans', sans-serif; font-size: 11px; font-weight: 500; padding: 5px 12px; border-radius: 3px; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); cursor: pointer; transition: all 0.15s; }
+.depth-btn:hover { color: var(--text); }
+.depth-btn.selected { border-color: var(--amber); color: var(--amber-hi); background: rgba(160,120,64,0.1); }
+
+/* ── WARGAME ── */
+.toggle-row { display: flex; gap: 16px; margin-bottom: 24px; align-items: center; flex-wrap: wrap; }
+.toggle-item { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.toggle-item input[type=checkbox] { appearance: none; width: 32px; height: 18px; background: var(--surface2); border: 1px solid var(--border); border-radius: 9px; position: relative; cursor: pointer; transition: background 0.15s; flex-shrink: 0; }
+.toggle-item input[type=checkbox]::after { content: ''; position: absolute; width: 12px; height: 12px; background: var(--text-faint); border-radius: 50%; top: 2px; left: 2px; transition: left 0.15s, background 0.15s; }
+.toggle-item input[type=checkbox]:checked { background: rgba(200,80,80,0.2); border-color: var(--red); }
+.toggle-item input[type=checkbox]:checked::after { left: 16px; background: var(--red-hi); }
+.toggle-label { font-size: 12px; color: var(--text-dim); }
+.toggle-label span { color: var(--text-faint); font-size: 11px; }
+
+/* ── PRESET ROW ── */
+.preset-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; align-items: center; }
+.preset-btn { font-size: 11px; padding: 4px 12px; border-radius: 3px; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.15s; }
+.preset-btn:hover { color: var(--text); border-color: var(--border-hi); }
+.preset-save { border-style: dashed; color: var(--text-faint); }
+.preset-save:hover { color: var(--accent-hi); border-color: var(--accent); }
+.preset-delete { font-size: 10px; color: var(--text-faint); margin-left: 4px; cursor: pointer; }
+.preset-delete:hover { color: var(--red-hi); }
+
+/* ── ACTION ── */
+.action-row { display: flex; gap: 10px; align-items: center; margin-bottom: 32px; flex-wrap: wrap; }
+.fire-btn { font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; padding: 11px 26px; background: var(--accent); color: #fff; border: none; border-radius: 4px; cursor: pointer; transition: background 0.15s, transform 0.1s; }
+.fire-btn:hover { background: var(--accent-hi); }
+.fire-btn:active { transform: scale(0.98); }
+.copy-btn { font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 10px 18px; background: transparent; color: var(--text-dim); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; transition: all 0.15s; }
+.copy-btn:hover { color: var(--text); border-color: var(--border-hi); }
+.status { font-size: 12px; color: var(--green-hi); opacity: 0; transition: opacity 0.3s; }
+.status.show { opacity: 1; }
+
+/* ── HISTORY ── */
+.history-list { display: flex; flex-direction: column; gap: 1px; }
+.history-item { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 14px 16px; cursor: pointer; transition: border-color 0.15s; margin-bottom: 8px; }
+.history-item:hover { border-color: var(--border-hi); }
+.history-question { font-family: 'IBM Plex Serif', serif; font-size: 14px; color: var(--text); margin-bottom: 6px; line-height: 1.4; }
+.history-meta { font-size: 11px; color: var(--text-faint); display: flex; gap: 12px; flex-wrap: wrap; }
+.history-meta span { display: flex; align-items: center; gap: 4px; }
+.history-actions { display: flex; gap: 8px; margin-top: 10px; }
+.history-reuse { font-size: 11px; padding: 3px 10px; border-radius: 3px; border: 1px solid var(--accent); color: var(--accent-hi); background: rgba(74,111,165,0.1); cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; }
+.history-reuse:hover { background: rgba(74,111,165,0.2); }
+.history-del { font-size: 11px; padding: 3px 10px; border-radius: 3px; border: 1px solid var(--border); color: var(--text-faint); background: transparent; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; }
+.history-del:hover { color: var(--red-hi); border-color: var(--red); }
+.empty-state { text-align: center; padding: 48px 0; color: var(--text-faint); font-size: 13px; }
+
+/* ── CUSTOM THINKERS ── */
+.custom-form { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 20px; margin-bottom: 20px; }
+.custom-form input, .custom-form textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 3px; color: var(--text); font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; padding: 10px 12px; outline: none; margin-bottom: 10px; transition: border-color 0.15s; }
+.custom-form input:focus, .custom-form textarea:focus { border-color: var(--accent); }
+.custom-form textarea { min-height: 70px; resize: vertical; font-family: 'IBM Plex Serif', serif; font-size: 13px; }
+.custom-form input::placeholder, .custom-form textarea::placeholder { color: var(--text-faint); }
+.add-btn { font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 8px 18px; background: var(--surface2); border: 1px solid var(--border-hi); border-radius: 3px; color: var(--text); cursor: pointer; transition: all 0.15s; }
+.add-btn:hover { background: var(--surface3); border-color: var(--accent); }
+.custom-list { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+.custom-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 3px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.custom-item-name { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+.custom-item-fw { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+.custom-item-del { font-size: 11px; color: var(--text-faint); cursor: pointer; flex-shrink: 0; padding: 2px 6px; border-radius: 2px; border: 1px solid transparent; }
+.custom-item-del:hover { color: var(--red-hi); border-color: var(--red); }
+
+/* ── DIVIDER ── */
+hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: var(--bg); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ── MOBILE ── */
+@media (max-width: 600px) {
+  .shell { padding: 20px 16px 80px; }
+  h1 { font-size: 24px; }
+  .wordmark { margin-bottom: 8px; }
+  header { margin-bottom: 28px; }
+
+  /* Tab bar — equal width tabs, no overflow */
+  .tab-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tab { font-size: 11px; padding: 12px 14px; white-space: nowrap; flex: 1; text-align: center; }
+
+  /* Textarea — 16px already set, just adjust height */
+  textarea { min-height: 90px; font-size: 15px; padding: 14px 14px; }
+
+  /* Live preview — shorter on mobile */
+  .live-preview { max-height: 140px; font-size: 11px; }
+
+  /* Model buttons — 2 per row minimum, bigger tap target */
+  .model-row { gap: 6px; }
+  .model-btn { font-size: 11px; padding: 8px 12px; min-height: 36px; }
+  .row-label { font-size: 10px; min-width: 38px; }
+
+  /* Depth buttons */
+  .depth-btn { font-size: 10px; padding: 7px 10px; min-height: 34px; }
+
+  /* Preset row — scrollable horizontally */
+  .preset-row { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+  .preset-btn { white-space: nowrap; flex-shrink: 0; font-size: 11px; padding: 6px 12px; min-height: 34px; }
+
+  /* Fire button — full width */
+  .action-row { flex-wrap: wrap; }
+  .fire-btn { width: 100%; text-align: center; padding: 14px; font-size: 14px; }
+  .copy-btn { flex: 1; text-align: center; padding: 12px; }
+
+  /* Domain headers */
+  .domain-toggle { font-size: 10px; padding: 3px 8px; }
+  .domain-select-all { font-size: 10px; }
+
+  /* Thinker pills — slightly larger tap target */
+  .thinker-pill { font-size: 11px; padding: 6px 10px; min-height: 32px; }
+
+  /* Section labels */
+  .section-label { font-size: 9px; }
+
+  /* Preview label */
+  .preview-label { font-size: 9px; }
+  .preview-count { font-size: 9px; }
+
+  /* Routing bar */
+  .routing-bar { font-size: 11px; }
+
+  /* History */
+  .history-question { font-size: 13px; }
+  .history-meta { gap: 8px; font-size: 10px; }
+  .history-actions { flex-wrap: wrap; }
+  .history-reuse, .history-del { font-size: 11px; padding: 6px 12px; min-height: 32px; }
+
+  /* Custom form */
+  .custom-form input, .custom-form textarea { font-size: 14px; }
+  .add-btn { width: 100%; padding: 12px; text-align: center; }
+
+  /* Modal */
+  .modal { padding: 20px 16px; width: calc(100vw - 32px); }
+
+  /* Toggle */
+  .toggle-label { font-size: 11px; }
+
+  /* Status message */
+  .status { font-size: 11px; width: 100%; margin-left: 0; }
+}
+
+/* ── MODAL ── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; display: none; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 24px; width: 360px; max-width: 90vw; }
+.modal h3 { font-family: 'IBM Plex Serif', serif; font-size: 18px; margin-bottom: 12px; }
+.modal input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 3px; color: var(--text); font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; padding: 10px 12px; outline: none; margin-bottom: 14px; }
+.modal input:focus { border-color: var(--accent); }
+.modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
+.modal-ok { font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 8px 18px; background: var(--accent); color: #fff; border: none; border-radius: 3px; cursor: pointer; }
+.modal-cancel { font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; padding: 8px 14px; background: transparent; color: var(--text-dim); border: 1px solid var(--border); border-radius: 3px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- SAVE PRESET MODAL -->
+<div class="modal-overlay" id="presetModal">
+  <div class="modal">
+    <h3>Save Preset</h3>
+    <input type="text" id="presetNameInput" placeholder="Name this configuration…" maxlength="40">
+    <div class="modal-btns">
+      <button class="modal-cancel" id="presetCancel">Cancel</button>
+      <button class="modal-ok" id="presetConfirm">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- TAB BAR -->
+<div class="tab-bar">
+  <button class="tab active" data-tab="oracle">Oracle</button>
+  <button class="tab" data-tab="history">History</button>
+  <button class="tab" data-tab="custom">Custom Thinkers</button>
+</div>
+
+<!-- ═══════════════ ORACLE TAB ═══════════════ -->
+<div class="tab-panel active" id="tab-oracle">
+<div class="shell">
+  <header>
+    <div class="wordmark">Intelligence Oracle</div>
+    <h1>Ask anything.<br>Draw on the best minds.</h1>
+    <p class="subtitle">Select thinkers, set depth, type your question. The app builds a synthesis prompt and opens your chosen model with it ready to paste.</p>
+  </header>
+
+  <!-- QUESTION FIRST — routing reads it -->
+  <div style="margin-bottom:28px;">
+    <div class="section-label" style="margin-bottom:10px;">Your Question</div>
+    <div class="input-block" style="margin-bottom:10px;">
+      <textarea id="question" placeholder="What decision, problem, or question do you want the world's best minds to weigh in on?" rows="5"></textarea>
+    </div>
+    <div id="routingBar" class="routing-bar"></div>
+  </div>
+
+  <!-- THINKER SELECTION -->
+  <div style="margin-bottom:28px;">
+    <div class="section-label">Thinkers — select individuals or entire domains</div>
+    <div id="thinkerDomains"></div>
+  </div>
+
+  <!-- LIVE PREVIEW -->
+  <div style="margin-bottom:24px;">
+    <div class="preview-label">
+      <span>Live Prompt Preview</span>
+      <span class="preview-count" id="previewCount"></span>
+    </div>
+    <div class="live-preview" id="livePreview"></div>
+  </div>
+
+  <!-- MODEL -->
+  <div class="model-row" style="margin-bottom:14px;">
+    <span class="row-label">Model</span>
+    <button class="model-btn selected" data-url="https://claude.ai">Claude</button>
+    <button class="model-btn" data-url="https://chatgpt.com">ChatGPT</button>
+    <button class="model-btn" data-url="https://gemini.google.com">Gemini</button>
+    <button class="model-btn" data-url="https://grok.com">Grok</button>
+    <button class="model-btn" data-url="https://perplexity.ai">Perplexity</button>
+    <button class="model-btn" data-url="https://chat.mistral.ai">Mistral</button>
+  </div>
+
+  <!-- DEPTH -->
+  <div class="depth-row">
+    <span class="row-label">Depth</span>
+    <button class="depth-btn selected" data-depth="sharp">Sharp</button>
+    <button class="depth-btn" data-depth="balanced">Balanced</button>
+    <button class="depth-btn" data-depth="deep">Deep</button>
+  </div>
+
+  <!-- TOGGLES -->
+  <div class="toggle-row">
+    <label class="toggle-item">
+      <input type="checkbox" id="wargameToggle">
+      <span class="toggle-label">War Game Mode <span>— steelman the counter-case</span></span>
+    </label>
+  </div>
+
+  <!-- PRESETS -->
+  <div style="margin-bottom:8px;"><div class="section-label">Presets</div></div>
+  <div class="preset-row" id="presetRow">
+    <button class="preset-btn" data-preset="deal">Deal Evaluation</button>
+    <button class="preset-btn" data-preset="performance">Peak Performance</button>
+    <button class="preset-btn" data-preset="strategy">Strategic Decision</button>
+    <button class="preset-btn" data-preset="build">Build Mode</button>
+    <button class="preset-btn" data-preset="super">Superintelligence</button>
+    <button class="preset-btn" data-preset="compete">Win the Game</button>
+    <button class="preset-btn" data-preset="understand">Understand Everything</button>
+    <button class="preset-btn" data-preset="omniscient">Omniscient</button>
+    <button class="preset-btn" data-preset="buildco">Build a Company</button>
+    <button class="preset-btn" data-preset="bigpicture">Big Picture</button>
+    <button class="preset-btn" data-preset="fullspectrum">Full Spectrum</button>
+    <button class="preset-btn" data-preset="lifeos">Life OS</button>
+    <button class="preset-btn" data-preset="worldview">World View</button>
+    <button class="preset-btn" data-preset="health">Health & Healing</button>
+    <button class="preset-btn" data-preset="powerread">Power & Money</button>
+    <button class="preset-btn preset-save" id="savePresetBtn">+ Save Current</button>
+  </div>
+
+  <!-- ACTION -->
+  <div class="action-row">
+    <button class="fire-btn" id="fireBtn">Build Prompt &amp; Open →</button>
+    <button class="copy-btn" id="copyBtn">Copy Only</button>
+    <span class="status" id="statusMsg"></span>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════ HISTORY TAB ═══════════════ -->
+<div class="tab-panel" id="tab-history">
+<div class="shell">
+  <header>
+    <div class="wordmark">Intelligence Oracle</div>
+    <h1>Question History</h1>
+    <p class="subtitle">Your last 20 sessions. Click any entry to reload it into the Oracle.</p>
+  </header>
+  <div id="historyList"></div>
+</div>
+</div>
+
+<!-- ═══════════════ CUSTOM THINKERS TAB ═══════════════ -->
+<div class="tab-panel" id="tab-custom">
+<div class="shell">
+  <header>
+    <div class="wordmark">Intelligence Oracle</div>
+    <h1>Custom Thinkers</h1>
+    <p class="subtitle">Add any mind — mentor, author, investor, operator. They appear as a selectable domain in the Oracle.</p>
+  </header>
+  <div class="custom-form">
+    <div class="section-label" style="margin-bottom:12px;">Add a Thinker</div>
+    <input type="text" id="customName" placeholder="Name (e.g. Naval Ravikant)">
+    <textarea id="customFramework" placeholder="Framework — how do they think? What lens do they apply? (e.g. 'specific knowledge — find the intersection of your curiosity, skills, and market need; wealth is created by owning equity, not selling time')"></textarea>
+    <button class="add-btn" id="addCustomBtn">Add Thinker</button>
+  </div>
+  <div class="custom-list" id="customList"></div>
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════
+const DOMAINS = {
+  arbitrage: {
+    label: "Arbitrage & Markets", color: "arbitrage",
+    keywords: ["arbitrage","invest","market","trade","price","value","asset","deal","fund","capital","risk","return","money","buy","sell","position","portfolio","valuation","mispricing","opportunity"],
+    people: [
+      { name: "George Soros",         framework: "reflexivity — markets create their own conditions; find the feedback loop before it closes and position inside it" },
+      { name: "Jim Simons",           framework: "signal extraction — find non-random pattern in noise before the market prices it in; systematize the edge" },
+      { name: "Peter Thiel",          framework: "contrarian truth — find the belief that is correct but no one publicly agrees with; exploit social and epistemic arbitrage" },
+      { name: "Stanley Druckenmiller",framework: "conviction sizing — concentrate massively on highest-conviction asymmetric positions; position size is the actual edge" },
+      { name: "Howard Marks",         framework: "cycle awareness — where in the risk cycle are we? price assets against fear and complacency, not fundamentals alone" },
+      { name: "Michael Burry",        framework: "read what others won't — the arbitrage is almost always in public information nobody processed; source documents first" },
+      { name: "Charlie Munger",       framework: "latticework of mental models — mispricing is caused by applying the wrong model; identify the correct model first; invert always" },
+      { name: "Cliff Asness",         framework: "behavioral finance at scale — markets misprice assets because humans are predictably irrational; systematize the counter-trade" },
+      { name: "Bill Gurley",          framework: "marketplace dynamics — regulatory capture creates arbitrage; understand when incumbents' moat is actually their vulnerability" },
+      { name: "Ray Dalio",            framework: "debt cycle and currency debasement — make the implicit explicit; codify principles and hold them when others can't" },
+      { name: "Chamath Palihapitiya", framework: "capital structure gaps — find the mismatch between private company growth narratives and public market liquidity mechanisms" },
+      { name: "Masa Son",             framework: "time arbitrage — invest before the market understands the category; use capital to force the outcome before the window closes" },
+    ]
+  },
+  ai: {
+    label: "AI & Technology", color: "ai",
+    keywords: ["ai","artificial intelligence","machine learning","model","llm","gpt","neural","algorithm","automation","software","technology","data","compute","agent","tool","system","code","build","engineer","tech"],
+    people: [
+      { name: "Demis Hassabis",     framework: "neuro-AI bridge — model AI on how the brain actually learns; apply AI to hard science problems first; capability and safety are not opposed" },
+      { name: "Dario Amodei",       framework: "safety-capability balance — interpretability is not a tax on capability; it is the path to durable and trustworthy capability" },
+      { name: "Ilya Sutskever",     framework: "singular mandate — identify the one thing that matters most and do nothing else until it is achieved; focus is the moat" },
+      { name: "Yann LeCun",         framework: "challenge the paradigm — LLMs are not sufficient for reasoning; world models and energy-based learning are the missing layer" },
+      { name: "Andrej Karpathy",    framework: "first principles reconstruction — rebuild the system from scratch to understand it; clarity of explanation is depth of understanding" },
+      { name: "Geoffrey Hinton",    framework: "foundation and risk — the same architecture enabling greatest benefits creates greatest risks; hold both truths simultaneously" },
+      { name: "Sam Altman",         framework: "deployment velocity and narrative — the market follows the story; ship fast enough that the story stays true" },
+      { name: "Noam Brown",         framework: "reasoning under imperfect information — multi-step strategic thinking in adversarial conditions; search plus learned intuition" },
+      { name: "Chris Olah",         framework: "mechanistic interpretability — understand what is actually happening inside the system before trusting it at scale" },
+      { name: "François Chollet",   framework: "true intelligence is generalization — can it solve a genuinely novel problem? benchmark against that, not trained performance" },
+      { name: "Yoshua Bengio",      framework: "learning efficiency and causality — the brain learns from one or two examples; AI must close the data efficiency gap to matter" },
+      { name: "Andrew Ng",          framework: "data-centric AI — high-quality data engineering beats model architecture tweaking; educate the practitioner layer to scale AI" },
+      { name: "Fei-Fei Li",         framework: "data as foundation — ImageNet proved that the dataset is the breakthrough; now building spatial intelligence at World Labs; bridges research, enterprise, and policy" },
+    ]
+  },
+  neuro: {
+    label: "Neuroscience", color: "neuro",
+    keywords: ["brain","mind","cognitive","memory","sleep","focus","attention","learning","behavior","stress","anxiety","performance","habit","emotion","consciousness","neural","dopamine","decision","psychology","mental"],
+    people: [
+      { name: "Karl Deisseroth",    framework: "causal circuit testing — correlation is not causation; test which specific circuits produce which behaviors before acting" },
+      { name: "Robert Sapolsky",    framework: "biological determinism — behavior is the output of nested causal layers: genes, hormones, development, culture; trace the full chain" },
+      { name: "David Eagleman",     framework: "neuroplasticity — the brain wires to any consistent input; design the environment and you design the mind" },
+      { name: "Stanislas Dehaene",  framework: "global workspace — consciousness is the broadcasting of information to the whole brain; design for what reaches awareness" },
+      { name: "György Buzsáki",     framework: "oscillation and consolidation — memory and insight emerge from rhythmic replay during sleep; protect the consolidation process" },
+      { name: "Li-Huei Tsai",       framework: "frequency entrainment — neural oscillations can be externally driven; match the frequency to the function you want to optimize" },
+      { name: "Andrew Huberman",    framework: "behavioral protocols — translate neuroscience into actionable inputs: light exposure, sleep architecture, dopamine management, stress inoculation" },
+      { name: "Michael Graziano",   framework: "attention schema — consciousness is the brain's model of its own attention process; optimize the attention process first" },
+      { name: "Christof Koch",      framework: "neural correlates of consciousness — find the minimal neural mechanism sufficient for awareness; measure before assuming" },
+      { name: "Polina Anikeeva",    framework: "soft bioelectronics — the interface between biology and technology must match the mechanical properties of tissue; hardness breaks the connection" },
+      { name: "Nancy Kanwisher",    framework: "functional specialization — specific cortical regions do specific things; map the function before assuming distributed processing; fMRI at unprecedented resolution" },
+      { name: "Terrence Sejnowski", framework: "computational neuro bridge — co-invented the Boltzmann machine (ancestor of deep learning); why does deep learning work at all? the biological answer is the theoretical one" },
+      { name: "Oded Rechavi",       framework: "transgenerational memory — learned behaviors and stress responses can be inherited via RNA across generations; the boundary between neuroscience and evolution is not fixed" },
+      { name: "Rafael Yuste",       framework: "neurorights — who owns your brain data? the legal and ethical framework for BCI must precede the technology; co-founded BRAIN Initiative; shaping constitutional neurorights" },
+      { name: "Chethan Pandarinath",framework: "latent-space neural decoding — move from reading individual neurons to reading the underlying computational state of entire circuits; LFADS algorithm for clinical BCI" },
+      { name: "Anna Dornhaus",      framework: "collective intelligence — cognition can emerge from networks with no central controller; swarm logic applies to distributed AI systems and decentralized decisions" },
+    ]
+  },
+  excellence: {
+    label: "Human Excellence", color: "excellence",
+    keywords: ["decision","wisdom","leadership","purpose","meaning","goal","life","success","discipline","mindset","philosophy","ethics","courage","principle","growth","character","virtue","clarity","identity","potential"],
+    people: [
+      { name: "Terence Tao",        framework: "abstract reasoning ceiling — decompose to axioms; solve across domain boundaries simultaneously by finding the shared structure" },
+      { name: "Richard Feynman",    framework: "first principles — if you cannot rebuild the idea from scratch in plain language, you do not understand it; rebuild before deciding" },
+      { name: "Marcus Aurelius",    framework: "practical wisdom under power — what would the best version of you do here? test every action against that standard, privately" },
+      { name: "Viktor Frankl",      framework: "meaning under adversity — the question is not what you expect from life but what life expects from you; find the obligation" },
+      { name: "Warren Buffett",     framework: "long game discipline — the decision that compounds over 20 years beats the decision that wins today; identify which game you are playing" },
+      { name: "Chris Voss",         framework: "tactical empathy — label the emotion, mirror the language, calibrate the question; never negotiate against yourself" },
+      { name: "David Goggins",      framework: "callus the mind — discomfort is the training stimulus; lean into resistance rather than manage around it; the 40% rule" },
+      { name: "Stewart Brand",      framework: "pace layers — different systems change at different speeds; match your decision horizon to the layer you are actually operating in" },
+      { name: "Garry Kasparov",     framework: "multi-move strategic sequencing — think several moves ahead; the move you make now should constrain opponent options, not just advance yours" },
+      { name: "Nassim Taleb",       framework: "antifragility and skin in the game — distinguish between fragile, robust, and antifragile systems; only trust those with downside exposure" },
+    ]
+  },
+  execution: {
+    label: "Execution & Building", color: "execution",
+    keywords: ["build","launch","startup","company","product","team","hire","scale","grow","execute","ship","revenue","customer","market","strategy","compete","operate","manage","deploy","create"],
+    people: [
+      { name: "Jeff Bezos",         framework: "regret minimization — will I regret not doing this at 80? if yes, act; two-way vs one-way door decisions; write the press release first" },
+      { name: "Elon Musk",          framework: "first principles manufacturing — delete the requirement, simplify, then optimize; never optimize something that should be eliminated" },
+      { name: "Steve Jobs",         framework: "taste as strategy — say no to 1000 things; the product is what you do not build as much as what you do; design is how it works" },
+      { name: "Patrick Collison",   framework: "infrastructure arbitrage — find what should be commodity but is priced as custom; standardize it and capture the spread at scale" },
+      { name: "Tobi Lütke",         framework: "platform inversion — find where a dominant player has created a gravity well leaving the periphery underserved; build the alternative" },
+      { name: "Marc Andreessen",    framework: "narrative creates reality — write the story that makes the paradigm shift happen, then be positioned inside it before consensus forms" },
+      { name: "Reed Hastings",      framework: "sequential disruption — every distribution model eventually breaks; identify which one is about to break and move before the break" },
+      { name: "Paul Graham",        framework: "make something people want — talk to users obsessively; the idea is the least important part; do things that don't scale first" },
+      { name: "Brian Chesky",       framework: "founder mode — be deeply involved in details even at scale; the CEO should be the last person comfortable with the status quo" },
+      { name: "Jensen Huang",       framework: "infrastructure as moat — the platform that runs everything becomes the only thing that matters; own the substrate, own the stack" },
+    ]
+  },
+  power: {
+    label: "Power, Law & Hidden Finance", color: "power",
+    keywords: ["law","legal","regulation","tax","government","policy","lobby","congress","federal","reserve","central bank","offshore","money","debt","dollar","currency","reserve","geopolitics","sanctions","treasury","sec","regulatory","capture","corruption","legislation","constitution","shell","trust","estate","wealth","transfer","hedge","private equity","carried interest","deregulation","shadow","banking","derivatives","structured","finance","empire","petrodollar","sovereign"],
+    people: [
+      { name: "Lawrence Lessig",    framework: "institutional corruption — institutions serve their funding class regardless of stated mission; the corruption is structural, not individual; money in politics rewrites the rules before they're argued" },
+      { name: "Michael Hudson",     framework: "dollar hegemony as extraction — surplus nations accumulate dollars via trade, recycle them into US treasuries, financing the US deficit; debt is the mechanism of empire, not its byproduct" },
+      { name: "Carroll Quigley",    framework: "parallel government — central banking networks operated as sovereign power across the 20th century; the real decisions happen in institutions with no electoral accountability" },
+      { name: "Nicholas Shaxson",   framework: "offshore architecture — City of London, Cayman Islands, Delaware LLCs, and Swiss banks form an interlocking system designed specifically to move money beyond sovereign reach" },
+      { name: "Hyman Minsky",       framework: "financial instability hypothesis — stability creates instability; the longer the boom, the more fragile the system; regulators who declare victory are the most dangerous actors in the room" },
+      { name: "Henry Kissinger",    framework: "geopolitical finance — the petrodollar arrangement (oil priced in dollars for US military protection) is the single most consequential financial architecture of the 20th century; it explains most US foreign policy" },
+      { name: "Gabriel Zucman",     framework: "empirical wealth mapping — $8T+ in offshore wealth is invisible to official statistics; built the first real maps of where wealth actually goes: pass-throughs, offshore accounts, carried interest structures" },
+      { name: "George Stigler",     framework: "regulatory capture — regulators eventually serve the industries they regulate; concentrated industry interest always beats diffuse public interest; every regulated industry eventually writes its own rules" },
+      { name: "James Buchanan",     framework: "public choice theory — politicians and bureaucrats maximize their own utility, not public welfare; the gap between stated and actual policy is the system working as designed, not a failure" },
+      { name: "Frank Partnoy",      framework: "structured finance extraction — financial innovation is often designed to transfer wealth from clients to banks; complexity is the moat; instruments designed to fail are sold to clients who don't understand them" },
+      { name: "Marriner Eccles",    framework: "monetary creation truth — banks create deposits when they make loans; money is not lent from reserves, reserves follow loans; the Fed Chairman who said in plain language how money is actually created" },
+      { name: "Edward McCaffery",   framework: "tax architecture — the buy, borrow, die strategy lets the ultra-wealthy access liquidity without triggering taxable events across generations; the tax code systematically converts labor income to capital income" },
+      { name: "Milton Friedman",    framework: "monetarism — the quantity of money is the variable governments actually control; inflation is always and everywhere a monetary phenomenon; everything else is noise or politics dressed as economics" },
+      { name: "Brad Setser",        framework: "global capital plumbing — tracks how sovereign wealth funds, central bank reserves, and offshore flows actually move; the financial architecture nobody watches until it breaks" },
+      { name: "Robert Kuttner",     framework: "deregulation anatomy — maps exactly how financial deregulation happened: who wrote the memos, who funded the think tanks, who rotated between Wall Street and Treasury; the how, not just the what" },
+      { name: "Ben Goldacre",       framework: "evidence corruption — pharmaceutical companies routinely suppress negative trial results, fund ghost-written studies, and design trials to produce favourable outcomes; half of all clinical trials go unpublished; the evidence base medicine claims to stand on is systematically distorted by the industry that funds it" },
+    ]
+  },
+  decision: {
+    label: "Decision Science & Game Theory", color: "decision",
+    keywords: ["decision","choice","strategy","game","theory","thinking","system","cognitive","bias","rational","irrational","risk","uncertainty","probability","bet","negotiate","incentive","behavior","persuade","influence","cooperate","compete","equilibrium","feedback","loop","leverage","model","mental","framework","heuristic","satisfice","optimize","commit","signal","threat","promise","coordinate","scale","emerge","complex","adaptive","dynamic"],
+    people: [
+      { name: "Daniel Kahneman",   framework: "System 1 vs System 2 — fast intuitive thinking vs slow deliberate reasoning; prospect theory: losses hurt roughly twice as much as equivalent gains feel good; the planning fallacy, anchoring, and availability heuristic explain most systematic decision errors" },
+      { name: "Amos Tversky",      framework: "framing effects — identical options presented differently produce opposite choices; loss aversion and reference dependence; the single most important finding for negotiation, sales, policy, and communication is that how you frame the choice determines the outcome" },
+      { name: "Richard Thaler",    framework: "nudge and choice architecture — the design of the choice environment determines outcomes as much as incentives; mental accounting: people treat money differently based on its label and source; endowment effect: we overvalue what we own" },
+      { name: "Herbert Simon",     framework: "bounded rationality — humans satisfice rather than optimize; find a good-enough solution and stop; cognitive limits, time pressure, and incomplete information define real decisions; the rational actor model is wrong by design" },
+      { name: "Robert Cialdini",   framework: "six principles of influence — reciprocity, commitment and consistency, social proof, authority, liking, scarcity; the actual levers of human compliance in the real world; every sales system, negotiation tactic, and marketing campaign traces back to these" },
+      { name: "John Nash",         framework: "Nash Equilibrium — the point where no player can improve their outcome by changing strategy unilaterally; every strategic interaction between rational agents settles here; the most important single concept in competitive decision-making" },
+      { name: "Thomas Schelling",  framework: "focal points and credible commitment — players coordinate without communication by converging on salient solutions; pre-commitment changes the game by removing options and making threats credible; the strategy of conflict is about constraining your own future choices" },
+      { name: "Robert Axelrod",    framework: "evolution of cooperation — Tit-for-Tat beats all strategies in iterated prisoner's dilemma; cooperate first, retaliate immediately when defected against, forgive quickly, be transparent; long-term repeated games produce cooperation that one-shot games cannot" },
+      { name: "John von Neumann",  framework: "game theory foundation — zero-sum vs non-zero-sum games are categorically different; minimax theorem: in zero-sum games the optimal strategy minimizes your maximum loss; strategic rationality requires modelling what the other player will do given they are modelling you" },
+      { name: "Donella Meadows",   framework: "leverage points in systems — places where small shifts produce large changes; ranked from least to most powerful: numbers, buffers, flows, feedback loops, information structure, rules, goals, paradigms; the highest leverage is the power to change the paradigm the system operates from" },
+      { name: "Jay Forrester",     framework: "system dynamics — complex systems produce counterintuitive behavior; policies designed to improve systems often make them worse due to feedback delays; the behavior of a system over time is determined by its structure not by external events" },
+      { name: "Peter Senge",       framework: "learning organizations — the five disciplines: personal mastery, mental models, shared vision, team learning, and systems thinking as the integrating fifth; most organizational problems are systems problems, not people problems" },
+      { name: "Geoffrey West",     framework: "universal scaling laws — cities, companies, and biological organisms follow the same mathematical scaling laws; companies scale sub-linearly like animals and eventually die; cities scale super-linearly and accelerate; size determines behavior more than strategy" },
+      { name: "John Boyd",         framework: "OODA loop — observe, orient, decide, act; the orientation phase is where advantage is won or lost because it filters all observation through mental models, culture, and experience; whoever cycles faster and more accurately wins; speed of orientation beats speed of action" },
+      { name: "Nassim Taleb",       framework: "antifragility as decision principle — fragile breaks under stress, robust resists, antifragile gains from disorder; never be in a position where ruin is possible regardless of probability; barbell strategy: maximum safety on one end, maximum risk on other, nothing in the middle; via negativa: removing bad is more powerful than adding good" },
+      { name: "Shane Parrish",      framework: "mental models as decision infrastructure — build a latticework of models from every discipline; the quality of your decisions is determined by the quality of your mental models; first-order thinking is easy and wrong; second-order thinking asks what are the consequences of the consequences" },
+      { name: "Edward de Bono",      framework: "lateral thinking as deliberate skill — the mind creates patterns and insight requires escaping them deliberately; Six Thinking Hats: parallel thinking (all wearing the same hat simultaneously) eliminates the ego defense that makes meetings unproductive; PO: provocative operations to break pattern" },
+      { name: "Annie Duke",        framework: "resulting is the cardinal decision error — judging decision quality by outcomes confuses luck with skill; good decisions produce bad outcomes and bad decisions produce good outcomes; the only controllable variable is decision process quality, not results" },
+    ]
+  },
+  military: {
+    label: "Military & Strategic Warfare", color: "military",
+    keywords: ["war","battle","strategy","tactics","military","conflict","compete","adversary","opponent","attack","defend","maneuver","terrain","intelligence","command","control","logistics","offense","defense","asymmetric","guerrilla","special","operations","mission","objective","force","power","leverage","position","flanking","surprise","deception","alliance","coalition"],
+    people: [
+      { name: "Sun Tzu",            framework: "supreme excellence is winning without fighting — know the enemy and know yourself and you need not fear; attack weakness not strength; speed, deception, and positioning defeat force; all warfare is based on deception" },
+      { name: "Carl von Clausewitz",framework: "war is the continuation of politics by other means — understand the political objective first; fog of war and friction mean no plan survives contact with the enemy; the center of gravity is the source of an enemy's power; destroy it" },
+      { name: "John Boyd",          framework: "OODA loop — observe orient decide act; orientation is the decisive phase where mental models filter reality; whoever cycles faster and destroys the opponent's ability to orient wins; applies to business, negotiation, and competition equally" },
+      { name: "Miyamoto Musashi",   framework: "the book of five rings — strategy is about reading the moment and responding to what is, not what you planned for; become comfortable in all situations; the primary objective is to cut the enemy's momentum before engagement" },
+      { name: "David Petraeus",     framework: "counterinsurgency and population-centric warfare — winning hearts and minds is not soft strategy, it is the only strategy that works when the adversary is embedded in the population; clear, hold, build sequence" },
+      { name: "Robert Greene",      framework: "the 48 laws of power and 33 strategies of war — power operates through concealment, positioning, and timing; most people telegraph their moves and underestimate opponents; the indirect approach defeats direct confrontation" },
+      { name: "B.H. Liddell Hart",  framework: "the indirect approach — throughout history the direct approach has consistently failed; dislocation of the enemy's psychological and physical balance before the decisive blow; expand along the line of least resistance and least expectation" },
+      { name: "Jocko Willink",      framework: "extreme ownership — there are no bad teams, only bad leaders; discipline equals freedom; decentralized command requires every team member to understand the mission two levels up; simplify, prioritize, execute" },
+      { name: "Edward Luttwak",     framework: "the paradoxical logic of strategy — in conflict what succeeds eventually fails because the opponent adapts; success breeds the conditions of failure; the side that is losing has the most incentive to change and the most to gain from doing so" },
+      { name: "Machiavelli",          framework: "power as it actually operates — the prince must know how to use both the lion and the fox; it is better to be feared than loved if you cannot be both; cruelty used well is applied once and quickly; the ends justify the means only when the prince's survival enables future good; appear virtuous while doing what survival requires" },
+      { name: "Thucydides",         framework: "the Thucydides trap — when a rising power threatens to displace a ruling power, the resulting structural stress makes conflict likely; fear, honor, and interest drive nations more reliably than ideology; the strong do what they can, the weak suffer what they must" },
+    ]
+  },
+  psychology: {
+    label: "Psychology & Human Behavior", color: "psychology",
+    keywords: ["psychology","behavior","personality","emotion","motivation","habit","change","therapy","mental","cognitive","social","influence","unconscious","identity","self","ego","shadow","archetype","development","attachment","trauma","belief","perception","memory","learning","conditioning","reward","punishment","drive","need","growth","potential","relationship","group","crowd","conformity"],
+    people: [
+      { name: "Carl Jung",          framework: "individuation and the shadow — the unconscious contains everything the ego rejects; the shadow must be integrated not suppressed; archetypes are universal patterns structuring human experience; the goal of psychological development is wholeness not perfection" },
+      { name: "Abraham Maslow",     framework: "hierarchy of needs — deficiency needs (physiological, safety, belonging, esteem) must be met before growth needs (self-actualization) become motivating; peak experiences mark moments of full actualization; being needs are qualitatively different from deficit needs" },
+      { name: "B.F. Skinner",       framework: "operant conditioning — behavior is shaped by its consequences; variable ratio reinforcement schedules produce the most persistent behavior; to change behavior change the reinforcement environment, not the person" },
+      { name: "Albert Bandura",     framework: "self-efficacy and social learning — people learn by observing others, not just by direct experience; belief in your own capacity to execute determines whether you attempt challenging tasks; the most powerful predictor of behavior is perceived capability not actual capability" },
+      { name: "Carol Dweck",        framework: "growth vs fixed mindset — belief that ability is fixed produces avoidance of challenge; belief that ability grows through effort produces resilience and mastery; the mindset is the operating system all other skills run on" },
+      { name: "Martin Seligman",    framework: "learned helplessness and positive psychology — repeated uncontrollable negative events produce passive acceptance of failure even when escape becomes possible; the three pillars of wellbeing: positive emotion, engagement, meaning, relationships, accomplishment (PERMA)" },
+      { name: "Milton Erickson",    framework: "therapeutic hypnosis and indirect suggestion — the unconscious mind responds to stories, metaphors, and indirect language more powerfully than direct commands; resistance dissolves when the unconscious is engaged rather than confronted" },
+      { name: "Philip Zimbardo",    framework: "situational power over disposition — the Stanford Prison Experiment demonstrated that normal people commit atrocities given the right situation; the situation is a more powerful determinant of behavior than character; system design determines human behavior more than individual will" },
+      { name: "Robert Sapolsky",    framework: "biological roots of behavior — behavior is the output of nested causal layers: genes, hormones, early development, culture; free will as commonly understood is largely illusory; understanding the biology behind behavior enables compassion and effective intervention" },
+      { name: "William James",       framework: "pragmatism and the will to believe — truth is what works; believe what is useful to believe when evidence is insufficient; habit is the great flywheel of society; the emotion follows the action not the reverse: act courageous and you will feel courageous; the stream of consciousness" },
+      { name: "Erich Fromm",         framework: "the escape from freedom — modern freedom produces anxiety that drives people toward authoritarian submission or conformity; love is an art requiring knowledge and effort not a feeling that happens to you; the sane society requires beings not just having; necrophilia vs biophilia as character orientations" },
+      { name: "Antonio Damasio",    framework: "emotion and reason are not separate — patients with damaged emotional centers cannot make simple decisions despite intact reasoning; somatic markers (bodily emotional signals) are prerequisite to rational decision-making; Descartes was wrong to separate mind and body" },
+    ]
+  },
+  philosophy: {
+    label: "Philosophy & Epistemology", color: "philosophy",
+    keywords: ["truth","knowledge","reality","ethics","logic","reason","meaning","consciousness","existence","free will","morality","justice","beauty","language","mind","metaphysics","epistemology","paradigm","falsify","verify","certainty","doubt","skeptic","belief","proof","argument","premise","conclusion","valid","sound","fallacy","ideology","value","virtue","good","evil","right","wrong"],
+    people: [
+      { name: "Karl Popper",        framework: "falsifiability as the demarcation criterion — a claim is scientific only if it can in principle be proven false; science advances by conjecture and refutation not by verification; one black swan falsifies all swans are white; be suspicious of theories that explain everything" },
+      { name: "Thomas Kuhn",        framework: "paradigm shifts — normal science operates within a paradigm until anomalies accumulate and a revolution replaces the old framework entirely; scientific progress is not linear accumulation but periodic revolutionary rupture; paradigms are invisible to those inside them" },
+      { name: "Socrates",           framework: "the Socratic method — expose ignorance through questions; the unexamined life is not worth living; wisdom begins with knowing what you do not know; the most dangerous person is the one who is ignorant of their own ignorance" },
+      { name: "Aristotle",          framework: "logic and virtue ethics — the syllogism as the structure of valid argument; virtue is the mean between excess and deficiency; eudaimonia (flourishing) is the highest good achieved through excellent activity in accordance with virtue across a complete life" },
+      { name: "Friedrich Nietzsche",framework: "will to power and revaluation of values — most moral systems are disguised power plays by the weak to constrain the strong; the Ubermensch creates their own values rather than inheriting them; eternal recurrence as the ultimate test of whether you affirm your life" },
+      { name: "Immanuel Kant",      framework: "categorical imperative — act only according to principles you could will to be universal law; treat people as ends not merely as means; synthetic a priori knowledge: some truths are both necessary and derived from experience" },
+      { name: "David Hume",         framework: "radical empiricism and the problem of induction — you cannot logically derive ought from is; causation is a habit of mind not an observable fact; all knowledge derives from experience and custom not reason alone; the self is a bundle of perceptions not a unified entity" },
+      { name: "Nassim Taleb",       framework: "epistemology of uncertainty — we systematically underestimate what we do not know; the narrative fallacy gives false causal structure to random events; skin in the game is the only reliable signal of genuine belief; never take advice from someone who has nothing to lose" },
+      { name: "Bertrand Russell",   framework: "logical analysis of language — most philosophical problems dissolve when language is analyzed precisely; the distinction between knowledge by acquaintance and knowledge by description; the value of philosophy is in the questions it sustains not the answers it provides" },
+      { name: "Ludwig Wittgenstein", framework: "the limits of my language are the limits of my world — most philosophical problems are confusions arising from misuse of language; whereof one cannot speak thereof one must be silent; meaning is use; language games constitute reality rather than merely describing it" },
+      { name: "Georg Hegel",         framework: "dialectical development — thesis generates antithesis which resolves in synthesis at a higher level; history is the development of freedom through conflict and reconciliation; the real is rational and the rational is real; Geist (mind/spirit) becoming conscious of itself through history" },
+      { name: "Isaiah Berlin",       framework: "negative vs positive liberty — negative liberty is freedom from interference; positive liberty is freedom to realize one's potential; pluralism: ultimate values are genuinely plural and incompatible; the most dangerous political ideas are those that claim to have found the one true answer" },
+      { name: "Alan Watts",         framework: "non-dual awareness — the separation between self and world is a conceptual construct not a fact; wisdom traditions across cultures converge on the insight that the observer and the observed are one system; resistance to what is creates suffering; presence is the practice" },
+    ]
+  },
+  geopolitics: {
+    label: "Geopolitics & World Systems", color: "geopolitics",
+    keywords: ["geopolitics","nation","state","empire","power","territory","resources","oil","energy","trade","sanctions","currency","reserve","military","alliance","nato","china","russia","america","europe","middle east","africa","asia","pacific","trade war","tariff","diplomacy","foreign policy","intelligence","hegemony","multipolar","demographic","population","geography","climate","border","migration","sovereignty"],
+    people: [
+      { name: "Peter Zeihan",       framework: "demography and geography as destiny — a nation's geography determines its strategic imperatives regardless of ideology; demographic collapse is already baked in for China, Russia, and Europe; the American shale revolution ended the strategic rationale for US global policing; deglobalization is structural not cyclical" },
+      { name: "George Friedman",    framework: "geography constrains strategy — nations behave according to geographic imperatives that outlast any government or ideology; the next 100 years of American primacy is determined by naval dominance of both oceans; the most reliable predictor of national behavior is location not leadership" },
+      { name: "Zbigniew Brzezinski",framework: "the grand chessboard — Eurasia is the pivot of global power; whoever controls the Eurasian landmass controls the world island; preventing any single Eurasian power from dominating is the permanent strategic imperative of American foreign policy" },
+      { name: "Samuel Huntington",  framework: "clash of civilizations — post-Cold War conflicts will occur along civilizational fault lines not ideological ones; the West, Islamic world, Confucian civilization, and others have incompatible values that no amount of economic integration resolves; culture is destiny at the civilizational level" },
+      { name: "Graham Allison",     framework: "Thucydides trap — when a rising power threatens to displace a ruling power war becomes likely; in 12 of 16 historical cases of power transition the result was war; the US-China relationship is the defining Thucydides case of our era" },
+      { name: "Henry Kissinger",    framework: "realpolitik and balance of power — moral principles are luxuries of security; the stability of the international order depends on a balance of power that no single nation dominates; diplomacy is the art of restraining power through power" },
+      { name: "Parag Khanna",       framework: "connectivity as the new geography — infrastructure, supply chains, and data networks are the new borders; the most connected nations win regardless of military power; the 21st century map is drawn by pipelines, fiber cables, and shipping lanes not armies" },
+      { name: "Ian Bremmer",        framework: "political risk as the primary business variable — geopolitical instability is now the dominant force in markets; the G-Zero world has no global leader; every company operates in a geopolitical environment it did not choose and cannot ignore" },
+      { name: "Niall Ferguson",     framework: "network theory of empire — great powers are networks not hierarchies; empires fall when the network degrades faster than it can be repaired; the killer app of Western civilization was institutions, property rights, and rule of law not military force" },
+      { name: "Dambisa Moyo",       framework: "emerging market perspective on global power — Western aid perpetuates African dependency; China's infrastructure investment model is more effective than Western conditionality; the coming resource wars will be fought over water, food, and rare earth minerals not oil" },
+    ]
+  },
+  spiritual: {
+    label: "Spiritual & Wisdom Traditions", color: "ceiling",
+    keywords: ["spiritual","wisdom","consciousness","enlightenment","meditation","prayer","faith","god","divine","soul","spirit","presence","surrender","ego","awakening","liberation","non-dual","mindfulness","compassion","gratitude","forgiveness","purpose","calling","sacred","ritual","tradition","ancient","perennial","mystic","contemplative","silence","stillness","love","peace","oneness","unity","transcend"],
+    people: [
+      { name: "Lao Tzu",            framework: "wu wei — non-action aligned with the natural flow of things; the Tao that can be named is not the eternal Tao; yield and overcome; the softest thing overcomes the hardest; knowing others is intelligence, knowing yourself is true wisdom" },
+      { name: "Rumi",               framework: "the wound is where the light enters — suffering and longing are the path not obstacles to it; the guest house: welcome every emotion as a visitor; love is the only force that dissolves the ego's separation; what you seek is seeking you" },
+      { name: "Epictetus",          framework: "the dichotomy of control — some things are in our power (judgment, impulse, desire, aversion) and some are not (body, reputation, property, office); focus exclusively on what is in your power and you cannot be harmed; freedom is an internal state not an external condition" },
+      { name: "The Buddha",         framework: "the four noble truths — suffering is universal; suffering arises from craving; suffering ceases when craving ceases; the eightfold path is the way; impermanence is the nature of all compounded things; the middle way avoids both indulgence and asceticism" },
+      { name: "Joseph Campbell",    framework: "the hero's journey — the monomyth: departure from the ordinary world, initiation through trials, return with the gift; every person's life follows this pattern; the refusal of the call is the greatest tragedy; follow your bliss and the universe opens doors where there were only walls" },
+      { name: "Krishnamurti",       framework: "freedom from the known — all psychological suffering comes from identification with thought, memory, and the self-image; the observer is the observed; truth is a pathless land; comparison is the source of violence; radical attention dissolves the problem" },
+      { name: "Meister Eckhart",    framework: "the ground of the soul — there is a spark of the divine in every person that cannot be touched by sin or suffering; detachment (Gelassenheit) is the highest virtue; God and the soul are not separate; the now is the only place where God is found" },
+      { name: "Ken Wilber",         framework: "integral theory — all perspectives are partial; the four quadrants (interior/exterior, individual/collective) must all be addressed; every level of development has a gift and a pathology; no perspective is wrong, only partial; transcend and include" },
+      { name: "Eckhart Tolle",      framework: "the power of now — the present moment is the only place life actually occurs; the ego is a collection of thoughts identified as self; pain is resistance to what is; presence dissolves the psychological accumulation that creates suffering" },
+      { name: "Teilhard de Chardin",framework: "the Omega Point — evolution is consciousness becoming aware of itself; matter is not dead but the exterior of spirit; the noosphere (layer of thought surrounding earth) is the next evolutionary emergence; love is the affinity of being for being and the energetic engine of evolution" },
+    ]
+  },
+  business: {
+    label: "Business & Management", color: "business",
+    keywords: ["business","management","leadership","organization","culture","hiring","team","product","market","brand","customer","revenue","profit","cost","margin","pricing","competition","innovation","disruption","strategy","vision","mission","value","proposition","model","growth","scale","operate","process","system","quality","excellence","turnaround","corporate","enterprise","startup","venture","founder","ceo","board","governance","stakeholder","supply chain","operations"],
+    people: [
+      { name: "Peter Drucker",       framework: "management as a liberal art — the purpose of business is to create a customer; what gets measured gets managed; the most important decisions are about people; management is doing things right, leadership is doing the right things; knowledge work requires self-management" },
+      { name: "Clayton Christensen", framework: "disruptive innovation — incumbents are rationally destroyed by technologies they dismiss as inferior; the innovator's dilemma is that good management causes failure; jobs to be done: customers hire products to do a job, design for the job not the customer profile" },
+      { name: "W. Edwards Deming",   framework: "total quality management — 94% of problems are system problems not people problems; variation is the enemy of quality; drive out fear; optimize the whole system not the parts; the system produces the results it is designed to produce" },
+      { name: "Jim Collins",         framework: "good to great — level 5 leadership combines fierce professional will with personal humility; first who then what (get the right people on the bus); the hedgehog concept: the intersection of what you are passionate about, best at, and what drives your economic engine" },
+      { name: "Michael Porter",      framework: "competitive advantage and the five forces — sustainable advantage comes from either cost leadership, differentiation, or focus; five forces (rivalry, suppliers, buyers, substitutes, new entrants) determine industry profitability; strategy is about choosing what not to do" },
+      { name: "Andy Grove",          framework: "only the paranoid survive — strategic inflection points change the competitive landscape entirely; output management: a manager's output is the output of their organization plus the output of adjacent organizations they influence; high output management" },
+      { name: "Alfred Sloan",        framework: "decentralized management — federated structure with centralized policy and decentralized operations; each division accountable for its own returns; the corporation as a portfolio of businesses each managed against objective performance metrics" },
+      { name: "Henry Mintzberg",     framework: "strategy as craft not planning — emergent strategy is as important as deliberate strategy; most real strategies form in practice not in planning sessions; managers do not work the way management textbooks say they do; the managing and planning must be unified" },
+      { name: "Eliyahu Goldratt",    framework: "theory of constraints — every system has one binding constraint limiting its output; identify the constraint, exploit it fully, subordinate everything else to it, elevate it, repeat; throughput accounting not cost accounting is the correct management lens" },
+      { name: "Ben Horowitz",        framework: "the hard thing about hard things — there is no formula for the hard decisions; peacetime CEO vs wartime CEO require completely different leadership styles; the most important management skill is making decisions with incomplete information under extreme stress" },
+    ]
+  },
+  technology: {
+    label: "Technology & Innovation", color: "technology",
+    keywords: ["technology","innovation","software","hardware","internet","platform","network","data","algorithm","code","digital","compute","semiconductor","chip","mobile","cloud","open source","protocol","standard","interface","product","design","engineering","research","development","patent","intellectual property","disruption","paradigm","architecture","infrastructure","crypto","blockchain","quantum","biotech","nanotech","robotics","automation","future","singularity"],
+    people: [
+      { name: "Alan Turing",         framework: "computation as the universal language — any process that can be precisely described can be computed; the Turing test frames machine intelligence as behavioral indistinguishability; the halting problem proves fundamental limits to what computation can determine about itself" },
+      { name: "Claude Shannon",      framework: "information theory — information is the reduction of uncertainty; every communication channel has a maximum capacity (Shannon limit) regardless of encoding; noise is the fundamental constraint; data compression and error correction follow from entropy mathematics" },
+      { name: "Douglas Engelbart",   framework: "augmenting human intellect — technology should amplify human capability not replace it; the computer is a bicycle for the mind; invented the mouse, hypertext, video conferencing, and collaborative real-time editing in 1968; the purpose of technology is collective intelligence" },
+      { name: "Kevin Kelly",         framework: "the technium — technology is the seventh kingdom of life, evolving by its own imperatives; what technology wants follows biological patterns of increasing complexity and diversity; every technology that can be made will be made; the internet is a single global machine" },
+      { name: "Clayton Christensen", framework: "technology S-curves — technologies improve along predictable S-curves; disruption happens when a new S-curve starts below the incumbent but grows faster; the technology that matters is always the one that looks insufficient today" },
+      { name: "Geoffrey Moore",      framework: "crossing the chasm — the gap between early adopters and the early majority is the graveyard of technology products; to cross it, dominate a niche completely before expanding; whole product: customers buy the complete solution not the technology" },
+      { name: "Nicholas Carr",       framework: "IT as commodity infrastructure — when a technology becomes infrastructure it loses strategic value and becomes a cost to be minimized; the question is not whether to adopt but when to commoditize; what technology does to cognition matters as much as what it enables" },
+      { name: "Tim Berners-Lee",     framework: "the web as commons — open standards and decentralized protocols beat closed proprietary systems for civilizational infrastructure; the web's power comes from universality; a platform that controls access controls the future; decentralization is a design value not a technical detail" },
+      { name: "Carlota Perez",       framework: "techno-economic paradigms — great surges of technology follow a pattern: installation period (financial capital drives speculation and crash) followed by deployment period (production capital spreads technology through economy); we are always somewhere in this cycle" },
+      { name: "Steve Jobs",          framework: "technology at the intersection of liberal arts — the most powerful technology is invisible; design is not how it looks but how it works; say no to 1000 things; the people who are crazy enough to think they can change the world are the ones who do" },
+    ]
+  },
+  creativity: {
+    label: "Creativity & Innovation Science", color: "creativity",
+    keywords: ["creative","creativity","innovation","imagination","art","design","story","narrative","idea","brainstorm","invent","discover","make","build","flow","inspiration","insight","breakthrough","original","novel","lateral","divergent","convergent","prototype","iterate","fail","experiment","play","curiosity","wonder","vision","aesthetic","craft","mastery","practice","deliberate","talent","genius","muse","process","culture","collaborate","synthesize"],
+    people: [
+      { name: "Mihaly Csikszentmihalyi", framework: "flow — optimal experience occurs when challenge and skill are in balance; consciousness is ordered, time disappears, the self dissolves into the activity; flow is the source of creativity, productivity, and meaning simultaneously; design environments and challenges that produce it" },
+      { name: "Ed Catmull",          framework: "creative culture — protect the nascent idea before it has the strength to defend itself; candor (the Braintrust) is the mechanism for honest creative feedback without authority; every Pixar film is terrible in early form; the process of iteration is the creative act" },
+      { name: "Steven Johnson",      framework: "where good ideas come from — ideas are slow hunches that collide with other slow hunches; the adjacent possible: you can only build what the current state of knowledge makes possible one step away; liquid networks and coffee houses produce more innovation than isolation" },
+      { name: "Edward de Bono",      framework: "lateral thinking and Six Thinking Hats — the mind creates patterns and creativity requires deliberately escaping them; six hats (white facts, red emotion, black caution, yellow optimism, green creative, blue process) enable parallel thinking instead of adversarial debate" },
+      { name: "Austin Kleon",        framework: "steal like an artist — nothing is original; good artists copy, great artists steal and transform; the creative process is curation and combination; show your work: the act of sharing your process attracts collaborators and accelerates development" },
+      { name: "Robert Fritz",        framework: "structural tension — the gap between vision and current reality creates tension that resolves by moving toward the vision or lowering the vision; most people lower the vision; holding the vision while accurately seeing reality is the creative act" },
+      { name: "Keith Sawyer",        framework: "group creativity — the lone genius myth is false; almost all important creative work is collaborative; improvisational collaboration (yes-and) outperforms brainstorming; innovation emerges from dense networks of weak ties not strong teams" },
+      { name: "Paul Graham",         framework: "taste is learnable — great work requires developing taste before skill catches up; work on what you are obsessively curious about; the best ideas look bad initially; the most important quality in a founder is relentless resourcefulness not intelligence" },
+      { name: "Twyla Tharp",         framework: "the creative habit — creativity is not inspiration but a disciplined daily practice; the box: capture everything related to a project without editing; begin before you are ready; scratch: the habit of scratching for ideas every day is more important than any single breakthrough" },
+      { name: "Tim Brown",           framework: "design thinking — empathy, definition, ideation, prototyping, testing as iterative cycle; the most important phase is empathy: understand the actual human problem not the assumed one; prototyping is thinking made tangible; fail early to succeed sooner" },
+    ]
+  },
+  economics: {
+    label: "Economics & Political Economy", color: "economics",
+    keywords: ["economics","economy","market","price","supply","demand","inflation","deflation","growth","recession","gdp","trade","labor","capital","land","rent","wage","profit","interest","money","currency","monetary","fiscal","policy","tax","spend","debt","deficit","surplus","equality","inequality","poverty","wealth","distribution","incentive","externality","public","private","common","property","rights","free","market","planned","mixed","keynesian","austrian","monetarist","behavioral","institutional"],
+    people: [
+      { name: "Adam Smith",          framework: "the invisible hand — individuals pursuing self-interest in competitive markets produce social benefit without intending to; the division of labor is the primary source of national wealth; the wealth of nations is productive capacity not gold; markets aggregate information no central planner can possess" },
+      { name: "John Maynard Keynes", framework: "aggregate demand determines output — in recessions private demand collapses and government must substitute; the paradox of thrift: individually rational saving is collectively destructive in downturns; animal spirits (confidence) drive investment decisions more than rational calculation" },
+      { name: "Friedrich Hayek",     framework: "the knowledge problem — the information required to run an economy is dispersed among millions of individuals and cannot be aggregated by any central authority; prices are the communication system that coordinates decentralized knowledge; central planning is epistemically impossible" },
+      { name: "Joseph Schumpeter",   framework: "creative destruction — capitalism progresses through waves of innovation that destroy existing industries and create new ones; the entrepreneur is the engine of growth not the equilibrium-seeking firm; long wave cycles (Kondratiev waves) structure economic history" },
+      { name: "Milton Friedman",     framework: "monetarism — inflation is always and everywhere a monetary phenomenon; the Great Depression was caused by monetary contraction not market failure; free markets and limited government are the only reliable foundations for prosperity; the social responsibility of business is to increase its profits" },
+      { name: "Thomas Piketty",      framework: "r greater than g — when the return on capital exceeds economic growth rate, wealth concentrates; capital in the 21st century shows that inequality is the default tendency of capitalism not an aberration; only progressive taxation historically reversed concentration" },
+      { name: "Hernando de Soto",    framework: "dead capital — the poor own assets but lack the legal infrastructure to convert them into capital; property rights and formal title systems are the foundation of market economies; the mystery of capital is that Western nations solved this problem and forgot they had" },
+      { name: "Ha-Joon Chang",       framework: "kicking away the ladder — every rich nation developed behind protectionist walls and then advocated free trade once dominant; the Washington Consensus prescribes to developing nations what developed nations never practiced themselves; industrial policy works when well designed" },
+      { name: "Mariana Mazzucato",   framework: "the entrepreneurial state — the most transformative innovations (internet, GPS, touchscreen, Siri) were funded by government not private venture capital; the state as risk-taker and market-maker not just market-fixer; mission-oriented public investment drives innovation" },
+      { name: "Daron Acemoglu",      framework: "institutions determine prosperity — inclusive economic and political institutions create sustained growth; extractive institutions create wealth for elites and poverty for everyone else; geography and culture are secondary to institutional design; Why Nations Fail is about institutional divergence" },
+    ]
+  },
+  communication: {
+    label: "Communication & Rhetoric", color: "communication",
+    keywords: ["communication","rhetoric","persuasion","story","narrative","message","audience","language","writing","speaking","present","pitch","negotiate","brand","frame","spin","media","publish","broadcast","viral","influence","reputation","trust","credibility","voice","style","clarity","simplicity","metaphor","analogy","emotion","logic","ethos","pathos","logos","silence","listen","question","feedback","conflict","difficult","conversation","public","relations","marketing","advertising","positioning"],
+    people: [
+      { name: "Aristotle",           framework: "ethos pathos logos — the three modes of persuasion: credibility of the speaker, emotional engagement of the audience, logical structure of the argument; rhetoric is the art of finding in any situation the available means of persuasion; form matters as much as content" },
+      { name: "Marshall McLuhan",    framework: "the medium is the message — the form of communication shapes perception more than its content; hot and cool media require different levels of audience participation; the global village: electronic media collapse space and time; we shape our tools and our tools shape us" },
+      { name: "George Orwell",       framework: "clarity as political power — political language is designed to make lies sound truthful and murder respectable; never use a long word where a short one will do; if it is possible to cut a word out, always cut it out; the great enemy of clear language is insincerity" },
+      { name: "Andy Raskin",         framework: "strategic narrative — the most powerful business story is: the world has changed, there are winners and losers, here is how to win; the narrative must come before the product pitch; your biggest competitor is the status quo not another company" },
+      { name: "Nancy Duarte",        framework: "the shape of great presentations — all great speeches move between what is and what could be; the hero is the audience not the presenter; create contrast between the current reality and the promised land; sparkline structure drives action" },
+      { name: "Robert Cialdini",     framework: "pre-suasion — what people are attending to immediately before a message determines how they receive it; channel attention to associations that prime the desired response; the frame is set before the message is delivered; attention is the primary resource" },
+      { name: "Dale Carnegie",       framework: "human relations principles — become genuinely interested in other people; remember names; talk in terms of the other person's interests; the only way to win an argument is to avoid it; arouse in the other person an eager want rather than telling them what to do" },
+      { name: "Jordan Peterson",     framework: "meaning through responsibility — tell the truth, or at least do not lie; stand up straight; pursue what is meaningful not what is expedient; clean your room before you tell others how to live; language and story are the substrate of culture and consciousness" },
+      { name: "Brene Brown",         framework: "vulnerability as strength — shame drives disconnection and conformity; vulnerability is the birthplace of innovation, creativity, and change; the wholehearted live with courage, compassion, and connection; the stories we tell ourselves determine the courage available to us" },
+      { name: "Paul Graham",         framework: "write simply to think clearly — writing is the most reliable test of whether you understand something; great essays start with a question not an answer; the goal is to surprise yourself; the essay as thinking tool not communication tool" },
+    ]
+  },
+  anthropology: {
+    label: "Anthropology & Culture", color: "anthropology",
+    keywords: ["culture","society","tribe","community","ritual","myth","symbol","meaning","identity","race","ethnicity","gender","class","power","language","kinship","family","marriage","religion","taboo","norm","value","custom","tradition","modernity","globalization","colonialism","post-colonial","indigenous","folk","popular","subculture","counterculture","social","structure","function","evolution","human","nature","nurture","universal","relative","diversity","inclusion"],
+    people: [
+      { name: "Joseph Henrich",      framework: "WEIRD bias — Western Educated Industrialized Rich Democratic societies are extreme outliers in human psychology; most psychology research is wrong about human nature because it samples from outliers; culture shapes cognition more profoundly than biology; collective intelligence is the human superpower" },
+      { name: "Margaret Mead",       framework: "culture over biology — human behavior is primarily shaped by cultural learning not genetic programming; adolescent experience is culturally determined not biologically inevitable; anthropology as the tool for questioning what seems natural and universal" },
+      { name: "Claude Levi-Strauss", framework: "structural anthropology — beneath the surface diversity of cultures lie universal binary structures (raw/cooked, nature/culture, sacred/profane); myth is not primitive science but a way of thinking about contradictions that cannot be logically resolved" },
+      { name: "Edward Hall",         framework: "proxemics and high vs low context culture — physical space, time, and communication context differ systematically across cultures; high-context cultures communicate through relationship and situation; low-context cultures make everything explicit; mismatches cause most cross-cultural failures" },
+      { name: "Geert Hofstede",      framework: "cultural dimensions — power distance, individualism vs collectivism, masculinity vs femininity, uncertainty avoidance, long vs short-term orientation, indulgence vs restraint; these six dimensions predict behavior across cultures with statistical reliability" },
+      { name: "Robin Dunbar",        framework: "Dunbar's number — humans can maintain stable social relationships with approximately 150 people; this constraint shapes all human organization from hunter-gatherer bands to military units to effective companies; beyond 150 you need rules and hierarchy instead of relationships" },
+      { name: "David Graeber",       framework: "debt and bullshit jobs — the first 5000 years of debt shows that debt preceded money and has always been a tool of social control; bullshit jobs: a large proportion of work produces no social value and the people doing it know it; bureaucracy is violence made invisible" },
+      { name: "Yuval Noah Harari",   framework: "sapiens — homo sapiens dominate because we can cooperate flexibly in large numbers through shared fictions (money, nations, corporations, gods); agriculture was history's greatest fraud for most humans; the future belongs to whoever controls the algorithms and biotechnology" },
+      { name: "Edward Said",         framework: "orientalism — the West constructed the East as its inferior Other to justify imperialism; knowledge production is always entangled with power; the narrative of who is civilized and who is primitive serves those who control the narrative" },
+      { name: "bell hooks",          framework: "intersectionality of oppression — race, gender, and class are not separate systems but interlocking structures; love as a practice is the foundation of liberation not just a feeling; the margin is a site of radical possibility not merely deprivation" },
+    ]
+  },
+  environment: {
+    label: "Environment & Planetary Systems", color: "environment",
+    keywords: ["environment","climate","ecology","nature","planet","earth","biodiversity","species","ecosystem","carbon","emissions","energy","renewable","solar","wind","ocean","forest","soil","water","food","agriculture","sustainability","regenerative","circular","waste","pollution","toxin","chemical","nuclear","natural","resource","scarcity","abundance","population","consumption","technology","geoengineering","conservation","wilderness","rewild","biomimicry","systems","complexity","resilience","threshold","tipping point"],
+    people: [
+      { name: "E.O. Wilson",         framework: "biophilia and biodiversity — humans have an innate affinity for life and living systems; the sixth mass extinction is underway; biodiversity is the library of life evolved over 4 billion years; half-Earth: protect half the planet's surface to save the majority of species" },
+      { name: "James Lovelock",      framework: "Gaia hypothesis — the Earth is a self-regulating system that maintains conditions for life; living organisms and their environment co-evolve as a single coupled system; the planet is not a passive backdrop for life but an active participant in evolution" },
+      { name: "Paul Hawken",         framework: "regenerative economics — drawdown: the most comprehensive plan to reverse global warming identifies 100 solutions already proven and deployable; regenerative agriculture can sequester more carbon than all current emissions; the economy must mimic ecological principles to survive" },
+      { name: "Donella Meadows",     framework: "planetary boundaries and leverage points — the Earth system has thresholds beyond which it shifts to a different state; small interventions at leverage points produce large systemic changes; the goal of sustainability is not to sustain the current system but to design a better one" },
+      { name: "Bill McKibben",       framework: "the end of nature — humans have altered every ecosystem on Earth; the climate crisis is not an environmental issue but a civilizational one; the fossil fuel industry is the most destructive force in history and must be treated as such; localism and community resilience" },
+      { name: "Vandana Shiva",       framework: "seed sovereignty and Earth democracy — industrial agriculture is a form of violence against nature and farmers; biodiversity is the foundation of food security; the corporation's enclosure of seeds is the enclosure of life itself; local food systems are planetary defense" },
+      { name: "William McDonough",   framework: "cradle to cradle — waste equals food in natural systems; design products and systems that have no waste because outputs become inputs; the goal is not less bad but more good; the industrial revolution needs a second design revolution built on biological principles" },
+      { name: "Janine Benyus",       framework: "biomimicry — nature has solved every design problem humans face over 3.8 billion years of R&D; the most sustainable technologies copy biological strategies; the question is not how do we extract from nature but what can we learn from it" },
+      { name: "Kate Raworth",        framework: "doughnut economics — the safe and just space for humanity lies between a social foundation (no one left in deprivation) and an ecological ceiling (no overshooting planetary boundaries); GDP growth is not the goal; thriving within the doughnut is" },
+      { name: "Robin Wall Kimmerer", framework: "braiding sweetgrass — indigenous plant knowledge and Western botany are not opposed but complementary; the grammar of animacy: treating nature as a collection of objects rather than subjects is both grammatically and morally wrong; reciprocity with the living world is the foundation of sustainability" },
+    ]
+  },
+  learning: {
+    label: "Education & Learning Science", color: "learning",
+    keywords: ["learn","education","teach","school","student","knowledge","skill","practice","mastery","expertise","memory","retention","recall","spaced","interleave","retrieve","forget","understand","transfer","apply","develop","grow","mentor","coach","feedback","motivation","engage","attention","distraction","focus","deep","work","deliberate","practice","talent","gifted","potential","intelligence","mindset","growth","fixed","curious","wonder","question","think","critical","creative","problem","solve"],
+    people: [
+      { name: "Anders Ericsson",     framework: "deliberate practice — expert performance requires specific structured practice with immediate feedback targeting weaknesses; natural talent is largely a myth; 10000 hours is wrong, the quality and structure of practice matters more than quantity; mental representations are what expertise actually is" },
+      { name: "Carol Dweck",         framework: "growth mindset — belief that ability is fixed produces avoidance of challenge and collapse under failure; belief that ability grows through effort produces resilience; the mindset is the operating system all learning runs on; praise effort and strategy not intelligence" },
+      { name: "Robert Bjork",        framework: "desirable difficulties — conditions that make learning harder in the short term (spaced practice, interleaving, retrieval practice) produce better long-term retention; the feeling of learning and actual learning are often inversely related; tests teach more than additional study" },
+      { name: "John Dewey",          framework: "learning by doing — education is not preparation for life but life itself; genuine learning arises from experience, reflection, and action in sequence; the school that disconnects learning from living produces people who cannot learn from living" },
+      { name: "Lev Vygotsky",        framework: "zone of proximal development — the distance between what a learner can do independently and what they can do with guidance; optimal learning occurs at the edge of current capability; social interaction is the engine of cognitive development not individual discovery" },
+      { name: "Barbara Oakley",      framework: "learning how to learn — focused and diffuse thinking modes alternate for effective learning; the Pomodoro technique and spaced repetition optimize encoding; procrastination is solved by starting not finishing; chunking builds the mental library expertise draws from" },
+      { name: "Peter Brown",         framework: "make it stick — retrieval practice beats re-reading; interleaving beats blocked practice; elaborative interrogation (why does this work?) beats highlighting; the most effective study techniques feel harder and less effective than ineffective ones" },
+      { name: "Paulo Freire",        framework: "the pedagogy of the oppressed — banking education (depositing knowledge into passive students) perpetuates oppression; critical pedagogy: education is always political; the goal is conscientization — developing critical consciousness about one's own situation and power to change it" },
+      { name: "Seymour Papert",      framework: "constructionism — learning happens best when learners construct things others can see and react to; computers are the greatest constructionist tool ever invented; you cannot teach a child to love math; you can create conditions in which they fall in love with it" },
+      { name: "Ken Robinson",        framework: "creativity in education — the education system was designed for the industrial age and produces industrial age workers; creativity is as important as literacy and should be treated with the same status; divergent thinking is a capacity that schools systematically diminish" },
+    ]
+  },
+  mathematics: {
+    label: "Mathematics & Logic", color: "mathematics",
+    keywords: ["math","mathematics","logic","proof","theorem","equation","number","pattern","structure","abstract","formal","axiomatic","set","function","probability","statistics","calculus","geometry","topology","algebra","combinatorics","graph","network","prime","infinite","zero","paradox","uncertainty","incompleteness","complexity","chaos","fractal","symmetry","elegant","beautiful","rigorous","truth","certainty","deduction","induction","inference","axiom","conjecture","lemma","corollary"],
+    people: [
+      { name: "Kurt Godel",          framework: "incompleteness theorems — any sufficiently powerful formal system contains true statements that cannot be proven within that system; consistency cannot be proven from within; every map has limits the map cannot show; this applies to all formal reasoning, not just mathematics" },
+      { name: "Leonhard Euler",      framework: "the unreasonable effectiveness of mathematics — found structure connecting e, pi, i, 1, and 0 in a single equation; solved problems by finding the right representation; beauty in mathematics is a signal of truth; graph theory, topology, and network science all begin with Euler" },
+      { name: "Srinivasa Ramanujan", framework: "mathematical intuition without proof — produced thousands of theorems from pure intuition, many later proven correct; the mind can reach true conclusions through pattern recognition before formal proof is possible; the unconscious mathematical mind operates by different rules than conscious reasoning" },
+      { name: "Georg Cantor",        framework: "infinity has structure — different sizes of infinity exist and are rigorously comparable; the continuum hypothesis; transfinite numbers; what seems paradoxical about infinity resolves when properly formalized; our intuitions about the infinite are systematically wrong" },
+      { name: "Alan Turing",         framework: "computation as mathematics — the Turing machine defines the limits of what can be computed; the halting problem proves some questions are formally undecidable; all sufficiently general computers are equivalent; the boundary between computable and uncomputable is the most important boundary in mathematics" },
+      { name: "John von Neumann",    framework: "mathematics as foundation for everything — game theory, quantum mechanics, computer architecture, and economics all formalized by one mind; the stored program computer; minimax theorem; the power of mathematics is in making implicit structure explicit and then optimizing it" },
+      { name: "Claude Shannon",      framework: "information is mathematical — entropy measures information content; every communication channel has a theoretical maximum capacity; compression and error correction follow from mathematics alone; information theory is the foundation of all digital technology" },
+      { name: "Benoit Mandelbrot",   framework: "fractal geometry of nature — natural shapes are not smooth but self-similar at every scale; the geometry of coastlines, markets, and lungs follows power laws not normal distributions; fat tails are the rule in nature, not the exception; roughness has mathematical structure" },
+      { name: "Terence Tao",         framework: "collaborative mathematics and breadth — the Fields Medal for solving problems across domains simultaneously; mathematics advances through community not isolated genius; the best mathematical intuition is disciplined and falsifiable, not mystical; rigor and creativity are not opposed" },
+      { name: "Nassim Taleb",        framework: "applied probability and tail risk — standard statistical models underestimate extreme events by orders of magnitude; the fourth quadrant: when variables are fat-tailed and nonlinear, statistical inference breaks down completely; never use the normal distribution for consequential decisions" },
+    ]
+  },
+  law: {
+    label: "Law & Justice", color: "law",
+    keywords: ["law","legal","justice","rights","constitution","court","judge","jury","contract","tort","crime","punishment","liability","regulation","statute","precedent","common","civil","criminal","procedure","evidence","trial","appeal","due process","equal","protection","liberty","freedom","property","intellectual","tax","corporate","international","human rights","ethics","moral","obligation","duty","enforcement","compliance","litigation","arbitration","mediation","legislation","executive","judicial","democratic","rule","sovereignty"],
+    people: [
+      { name: "John Rawls",          framework: "justice as fairness — the veil of ignorance: design a just society without knowing your position in it; the difference principle: inequalities are just only if they benefit the least advantaged; the original position as a thought experiment for deriving principles of justice" },
+      { name: "Oliver Wendell Holmes",framework: "the life of the law is experience not logic — law evolves through the felt necessities of the time; the bad man theory: law is what courts will actually do, not what they say; clear and present danger; legal pragmatism over formal deduction" },
+      { name: "Ronald Dworkin",      framework: "law as integrity — judges must interpret law so the legal system speaks with one coherent moral voice; rights are trumps that override utilitarian calculations; the one right answer thesis: there is always a best legal answer even in hard cases" },
+      { name: "Friedrich Hayek",     framework: "rule of law vs rule of men — the rule of law requires that government be bound by fixed rules announced in advance; spontaneous legal order (common law) is more reliable than legislated order; the greatest threat to freedom is the discretionary power of government officials" },
+      { name: "Lon Fuller",          framework: "the inner morality of law — law must meet eight procedural criteria to be law at all: generality, promulgation, non-retroactivity, clarity, non-contradiction, possibility of compliance, constancy, congruence; law that fails these criteria is not law but coercion" },
+      { name: "Richard Posner",      framework: "law and economics — legal rules should be evaluated by their economic efficiency; the common law tends toward efficiency through evolutionary selection; cost-benefit analysis is the correct framework for most legal questions; judges are pragmatists not moral philosophers" },
+      { name: "Roberto Unger",       framework: "critical legal studies — law is politics; legal doctrine does not determine outcomes, ideological choice does; legal indeterminacy: for every legal argument there is an equally valid counter-argument; the goal is to use law to expand human possibility not just legitimate existing power" },
+      { name: "William Blackstone",  framework: "common law as accumulated wisdom — the common law embodies centuries of practical problem-solving; legal rights precede the state that protects them; natural law grounds positive law; commentaries on the laws of England as the foundation of the Anglo-American legal tradition" },
+      { name: "Roscoe Pound",        framework: "sociological jurisprudence — law must be evaluated by its social effects not its logical consistency; the law in books vs the law in action are different things; legal reform requires empirical study of how law actually operates in society" },
+      { name: "Martha Nussbaum",     framework: "capabilities approach to justice — justice requires that people have the real opportunity to live flourishing lives; a list of central human capabilities defines the minimum threshold of justice; emotions are forms of intelligence relevant to legal and political reasoning" },
+    ]
+  },
+  medicine: {
+    label: "Medicine & Clinical Science", color: "medicine",
+    keywords: ["medicine","clinical","doctor","patient","diagnosis","treatment","surgery","hospital","drug","therapy","disease","condition","symptom","sign","test","scan","biopsy","prognosis","evidence","trial","placebo","control","randomized","systematic","review","meta-analysis","epidemiology","public health","prevention","screening","primary","secondary","tertiary","care","quality","safety","error","system","team","communication","empathy","decision","uncertainty","risk","benefit","harm","consent","ethics","palliative","end of life"],
+    people: [
+      { name: "William Osler",       framework: "listen to the patient — the patient will tell you the diagnosis if you listen; the good physician treats the disease, the great physician treats the patient who has the disease; equanimity under uncertainty; medicine is the science of uncertainty and the art of probability" },
+      { name: "Atul Gawande",        framework: "medicine as a system problem — most medical errors are system failures not individual failures; checklists save lives by making the implicit explicit; the cost of unnecessary intervention often exceeds the cost of disease; Being Mortal: medicine's inability to handle dying is a system failure" },
+      { name: "Paul Farmer",         framework: "structural violence and global health — poverty is the greatest disease; the diseases of the poor are neglected because the poor cannot pay; Partners in Health proves that world-class medicine can be delivered anywhere with the right commitment; accompaniment as medical practice" },
+      { name: "Ignaz Semmelweis",    framework: "hand washing and the danger of institutional resistance — discovered that hand washing eliminated childbed fever in 1847; was rejected, ridiculed, and institutionalized; the lesson: correct evidence is insufficient to change medical practice when it threatens institutional identity" },
+      { name: "Rudolf Virchow",      framework: "medicine as social science — politics is medicine at a large scale; disease has social determinants; the physician is the natural attorney of the poor; public health requires social reform not just medical treatment; cellular pathology as the foundation of modern diagnosis" },
+      { name: "Elisabeth Kubler-Ross",framework: "the five stages of grief — denial, anger, bargaining, depression, acceptance; dying patients need to be heard not managed; the medical system's avoidance of death causes enormous suffering; On Death and Dying opened the conversation medicine had been refusing to have" },
+      { name: "Eric Topol",          framework: "the patient will see you now — digital medicine and AI will return medicine to its individual patient focus; genomics, sensors, and machine learning make precision medicine possible; the patient as partner not passive recipient; medicine's data problem is also its opportunity" },
+      { name: "Archie Cochrane",     framework: "evidence-based medicine — medical practice must be based on randomized controlled trials not clinical experience alone; most medical practice in 1970 had no evidence base; the Cochrane Collaboration as the infrastructure of evidence-based medicine; effectiveness and efficiency are both required" },
+      { name: "Peter Pronovost",     framework: "patient safety through systems — the ICU checklist eliminated central line infections to near zero in Michigan hospitals; safety is a systems design problem not an individual responsibility; measurement and transparency are the first steps to improvement; speak up culture saves lives" },
+      { name: "Siddhartha Mukherjee",framework: "cancer as evolutionary process — cancer is the disease of our own cells evolving to escape the constraints of multicellular life; The Emperor of All Maladies as biography of cancer; treatment must out-evolve the tumor; the gene as the unit of biological causation and medical future" },
+    ]
+  },
+  performance: {
+    label: "Sports Science & Peak Performance", color: "performance",
+    keywords: ["performance","athlete","sport","training","competition","winning","champion","elite","peak","flow","mental","physical","strength","speed","endurance","recovery","sleep","nutrition","mindset","pressure","clutch","fear","confidence","focus","visualization","routine","habit","process","coach","team","culture","accountability","discipline","grit","resilience","adversity","injury","comeback","motivation","intrinsic","extrinsic","reward","goal","identity","excellence","mastery","deliberate","practice","zone","optimal"],
+    people: [
+      { name: "Tim Grover",          framework: "relentless — cleaners operate at a level beyond excellence; they do not think about winning, they think about the next level; the cleaner does not celebrate, does not reflect, moves immediately to what is next; instinct over thinking under pressure; the dark side of competitive drive is a feature not a bug" },
+      { name: "Jim Loehr",           framework: "energy management not time management — performance is determined by the management of physical, emotional, mental, and spiritual energy; full engagement requires the capacity to move between stress and recovery; toughness is the ability to perform at your best when it matters most" },
+      { name: "Bob Bowman",          framework: "training the mind as the primary competitive variable — Michael Phelps trained in the dark, with broken goggles, in every conceivable adversity condition so nothing in competition could be new; mental rehearsal of the perfect race and the disaster race equally; process not outcome" },
+      { name: "George Mumford",      framework: "the mindful athlete — presence is the foundation of peak performance; the space between stimulus and response is where champions are made; taught mindfulness to Michael Jordan and the Chicago Bulls; the zone is not mystical but a trainable state of non-reactive awareness" },
+      { name: "Carol Dweck",         framework: "growth mindset in performance — elite athletes who attribute failure to effort rather than talent recover faster, train harder, and reach higher performance ceilings; the most talented athletes with fixed mindsets underperform their potential; mindset is the upstream variable" },
+      { name: "Martin Seligman",     framework: "learned optimism in sport — explanatory style determines performance after failure; athletes who explain setbacks as temporary, specific, and external recover and perform; those who explain them as permanent, pervasive, and personal spiral; optimism is a learnable performance skill" },
+      { name: "Amos Wilson",         framework: "psychological warfare and competitive dominance — the mental game begins before the physical contest; controlling the narrative, managing the opponent's psychology, and performing under psychological pressure are skills as trainable as physical ones" },
+      { name: "Dan Pfaff",           framework: "systems approach to athletic development — the athlete is a complex adaptive system; training must address all subsystems simultaneously; long-term athletic development over short-term performance; biomechanical efficiency as the foundation of sustainable high performance" },
+      { name: "Michael Gervais",     framework: "high performance psychology — fear of people's opinions (FOPO) is the greatest limiter of human performance; the present moment is the only place performance occurs; training the mind requires the same systematic approach as training the body; found in the now" },
+      { name: "Gabor Mate",          framework: "trauma and elite performance — many elite athletes are driven by early developmental trauma that produces extraordinary motivation but also self-destructive patterns; authentic performance aligned with intrinsic values outlasts trauma-driven performance; the body keeps the score in sport too" },
+    ]
+  },
+  longevity: {
+    label: "Longevity & Lifestyle Medicine", color: "longevity",
+    keywords: ["health","longevity","aging","lifespan","healthspan","sleep","fasting","exercise","nutrition","diet","metabolism","muscle","cardio","vo2","glucose","insulin","inflammation","mitochondria","cancer","prevention","lifestyle","chronic","disease","weight","fat","protein","strength","biomarker"],
+    people: [
+      { name: "Peter Attia",        framework: "Medicine 3.0 — VO2 max, strength, sleep, metabolic health, and emotional health are the five pillars; optimize for the last decade of life not the average; identify and prevent the four horsemen: heart disease, cancer, neurodegenerative disease, metabolic dysfunction" },
+      { name: "Valter Longo",       framework: "fasting mimicking diet — periodic caloric restriction triggers autophagy, suppresses IGF-1, and selectively starves damaged cells; the most clinically validated fasting protocol; longevity via cellular renewal cycles" },
+      { name: "David Sinclair",     framework: "information theory of aging — aging is a loss of epigenetic information not just cellular damage; NAD+ biology and sirtuin activation can reverse biological age markers; aging itself is a disease, not an inevitability" },
+      { name: "Rhonda Patrick",     framework: "micronutrient sufficiency first — fill deficiency gaps before layering interventions; hormetic stressors (sauna, cold) activate survival pathways; always report what studies actually show including uncertainty and limitations" },
+      { name: "Gabrielle Lyon",     framework: "muscle-centric medicine — skeletal muscle is the organ of longevity; the problem is not overfat but undermuscled; protein timing and resistance training are primary levers not secondary ones" },
+      { name: "Matthew Walker",     framework: "sleep as foundation — every other health intervention degrades without adequate sleep; deprivation elevates cancer risk, Alzheimer's risk, metabolic dysfunction, and immune collapse simultaneously; non-negotiable floor before any other optimization" },
+      { name: "Michael Greger",     framework: "whole food plant-based evidence base — systematic annual review of every nutrition study; plant-predominant patterns produce the most consistent cardiovascular, cancer, and metabolic outcomes across populations at lowest cost" },
+      { name: "Dan Buettner",       framework: "Blue Zones empiricism — study actual longest-lived populations not protocols; convergent behaviors: plant-predominant diet, daily low-intensity movement, strong social connection, sense of purpose, low chronic stress; simplest evidence base in the field" },
+      { name: "Wim Hof",            framework: "deliberate cold and breathwork — demonstrated voluntary influence over autonomic nervous system and immune response under controlled conditions; cold exposure and specific breathing patterns reduce inflammation and build stress resilience" },
+      { name: "Rangan Chatterjee",  framework: "four pillars in primary care — food, movement, sleep, relaxation applied at GP level with documented reversal of lifestyle diseases without drugs; the bridge between academic longevity research and practical clinical deployment" },
+    ]
+  },
+  holistic: {
+    label: "Holistic & Mind-Body", color: "holistic",
+    keywords: ["mind","body","spirit","consciousness","meditation","mindfulness","trauma","stress","emotion","healing","belief","energy","soul","purpose","meaning","nervous system","somatic","breath","presence","awareness","subconscious","epigenetic","attachment","regulation","integration","spiritual","inner","self"],
+    people: [
+      { name: "Jon Kabat-Zinn",       framework: "MBSR — extracted mindfulness from Buddhist tradition, stripped the metaphysics, built a replicable clinical protocol with peer-reviewed evidence base; the most empirically validated holistic intervention in existence; deployed in thousands of hospitals globally" },
+      { name: "Bessel van der Kolk",  framework: "the body keeps the score — trauma is stored in the nervous system not just the mind; talk therapy alone cannot reach it; EMDR, somatic experiencing, yoga, and neurofeedback address what words cannot reach" },
+      { name: "Gabor Mate",           framework: "trauma-disease connection — early childhood trauma and chronic stress directly drive autoimmune disease, cancer, and addiction; the body keeps score of unresolved emotional experience as physical symptoms; ask not what is wrong with you but what happened to you" },
+      { name: "Herbert Benson",       framework: "relaxation response — the physiological counterpart to the stress response deliberately activated through meditation and breathwork; first rigorous Western scientific proof that mind directly alters body physiology; foundation of all mind-body medicine" },
+      { name: "Richard Davidson",     framework: "contemplative neuroscience — long-term meditation reshapes brain structure: thicker prefrontal cortex, reduced amygdala reactivity, enhanced immune function; emotional styles are trainable brain-based dimensions not fixed personality traits" },
+      { name: "Dan Siegel",           framework: "interpersonal neurobiology — relationships and attachment patterns literally shape brain architecture; health is integration of differentiated parts into coordinated whole at brain, family, and community level simultaneously" },
+      { name: "Bruce Lipton",         framework: "biology of belief — gene expression is controlled by environment and perception not fixed genetic fate; subconscious beliefs alter cell membrane receptor behavior; the new biology means biology is not destiny" },
+      { name: "Deepak Chopra",        framework: "consciousness as ground state — awareness is the foundation of physical health not a byproduct; mind-body-spirit as unified system; the most widely influential bridge between Ayurvedic medicine and Western health frameworks" },
+      { name: "Andrew Weil",          framework: "integrative medicine as clinical discipline — anti-inflammatory diet, botanical medicine, and breathing protocols combined with conventional medicine; founded the field institutionally; trained more integrative physicians than any other institution" },
+      { name: "Joe Dispenza",         framework: "neuroplasticity through elevated emotion — sustained elevated emotion reprograms the autonomic nervous system; heart-brain coherence produces measurable immune and genetic changes; thought produces neurochemistry that produces biology" },
+    ]
+  },
+  naturopathic: {
+    label: "Naturopathic & Root Cause", color: "naturopathic",
+    keywords: ["naturopath","botanical","herbal","root cause","toxin","detox","gut","microbiome","hormone","thyroid","adrenal","autoimmune","supplement","functional","integrative","natural","remedy","cleanse","liver","lymph","alkaline","plant medicine","adaptogen","deficiency","terrain","mucus","electric","mineral","cellular","ph","hybrid","food","herbs"],
+    people: [
+      { name: "Joe Pizzorno",         framework: "environmental toxin load as root cause — metals, pesticides, and plasticizers accumulating in tissue drive chronic disease; naturopathic protocols address root toxicity before it becomes pathology; the most rigorous institutional builder of evidence-based natural medicine" },
+      { name: "Michael Murray",       framework: "evidence-based botanical medicine — every natural intervention catalogued with specific peer-reviewed studies, doses, and contraindications; the clinical reference the field trusts most; rigor over tradition at every point" },
+      { name: "Datis Kharrazian",     framework: "brain-gut-immune axis — neuroinflammation, blood-brain barrier permeability, and Hashimoto's autoimmunity as interconnected systems; functional lab interpretation that bridges naturopathic philosophy with neuroscience at conventional scrutiny level" },
+      { name: "Aviva Romm",           framework: "HPA axis dysregulation as root cause — adrenal and hormonal dysregulation drives most chronic symptoms in women; adaptogens and lifestyle address the upstream cause; botanical medicine in women's health at the highest evidence standard" },
+      { name: "Tieraona Low Dog",     framework: "evidence filter for natural medicine — former US Pharmacopeia Dietary Supplements Committee Chair; the clearest clinical voice on what botanical medicines have solid evidence, which are overhyped, and which are dangerous regardless of tradition" },
+      { name: "Jillian Stansbury",    framework: "phytochemistry at molecular depth — understands plant chemistry at the molecular level not just traditional use; most comprehensive clinical botanical reference organized by body system with specific formulas, dosing, and contraindications" },
+      { name: "Dr. Sebi",             framework: "African bio-mineral balance — whole plant foods, cellular cleansing, and eliminating hybrid and processed foods as foundation; genuine insight: eliminating processed food and returning to whole plant diet heals chronic disease; the mucus theory and alkaline pH mechanism are contested but the dietary direction is validated by modern nutritional science" },
+      { name: "Barbara O'Neill",      framework: "natural lifestyle education — the body heals itself when given proper inputs and obstacles removed; genuine contributions: processed food drives chronic disease, micronutrient deficiency is epidemic, pharmaceutical over-prescription causes harm, sunlight and natural living are undervalued; apply claim-by-claim discernment for serious acute conditions" },
+      { name: "Lise Alschuler",       framework: "naturopathic oncology — integrating naturopathic protocols alongside conventional oncology to reduce side effects, improve treatment tolerance, and address recurrence prevention; which supplements interact with chemotherapy is clinically critical knowledge" },
+      { name: "Heather Zwickey",      framework: "naturopathic research infrastructure — building the clinical trial methodology that either validates or refutes naturopathic claims; making natural medicine scientifically accountable; without rigorous evidence infrastructure the field remains anecdotal" },
+    ]
+  },
+  ceiling: {
+    label: "Human Ceiling", color: "ceiling",
+    keywords: ["genius","creative","art","music","design","rhetoric","moral","courage","presence","legacy","history","philosophy","beauty","mastery","craft","language","writing","ethics","imagination","archetype"],
+    people: [
+      { name: "Leonardo da Vinci",  framework: "generative range — operate simultaneously at the ceiling of art, anatomy, engineering, architecture, and military design; curiosity is the method, not a trait" },
+      { name: "Buckminster Fuller", framework: "anticipatory design science — synthesize physical, social, economic, and design systems into unified frameworks; do more with less is a civilizational principle, not a product feature" },
+      { name: "Richard Feynman",    framework: "first principles rebuilding — if you cannot reconstruct the idea from base axioms in plain language, you do not understand it; rebuild every field from scratch" },
+      { name: "Freeman Dyson",      framework: "scientific intuition — look at a problem for 20 minutes and see the solution that takes others years; knowing which problems are worth solving matters more than solving them" },
+      { name: "Francis Crick",      framework: "biological intuitive leap — see the correct structural truth before the data is clean enough to confirm it; the rarest scientific gift is knowing where to look before you look" },
+      { name: "Shakespeare",        framework: "narrative range — every major human psychological archetype captured with precision across 37 plays; the depth of human insight expressed through language is the ceiling" },
+      { name: "Johann Sebastian Bach",framework: "mathematical emotion — unify mathematical structure and emotional depth; the brain processes pattern, prediction, and violation simultaneously; structure IS feeling" },
+      { name: "Dieter Rams",        framework: "design discipline — good design is as little design as possible; ten principles of form and function that remain the clearest articulation of how things should relate" },
+      { name: "Nelson Mandela",     framework: "moral presence — 27 years imprisoned, emerged without bitterness; held a fractured nation together through moral authority alone; the ceiling for what human dignity can accomplish politically" },
+      { name: "Fred Rogers",        framework: "operationalized empathy — understand emotional regulation, child development, and human dignity; apply it with consistency across decades at scale; make the implicit explicit in every interaction" },
+      { name: "Viktor Frankl",      framework: "meaning under maximum adversity — the question is not what you expect from life but what life expects from you; meaning is the primary human motivator, not pleasure or power" },
+      { name: "Immanuel Kant",      framework: "ethical universalizability — the categorical imperative: act only according to principles you could will to be universal law; the most rigorous framework for universal ethical reasoning" },
+      { name: "Winston Churchill",  framework: "rhetoric under existential threat — hold a nation together with language alone in 1940; the ceiling for what rhetoric can accomplish against civilizational adversity" },
+      { name: "Simone Biles",       framework: "body-mind integration — perform moves considered physically impossible before she did them; the ceiling of physical intelligence under competitive pressure on demand" },
+      { name: "Michael Jordan",     framework: "flow state on demand — access peak performance states consistently under maximum pressure across a career; the most documented case in performance psychology literature" },
+      { name: "Garry Kasparov",     framework: "strategic sequencing under pressure — multi-move thinking in adversarial conditions; the move now should constrain opponent options for three moves; generalizes beyond chess" },
+    ]
+  }
+};
+
+const DEPTH_INSTRUCTIONS = {
+  sharp:    `Respond directly and concisely. Lead with the answer or recommendation. No preamble. No padding. Weave the thinker frameworks in — do not list them mechanically.`,
+  balanced: `Provide the reasoning behind the most relevant framework lenses, then synthesize into a unified recommendation. Show your work but stay disciplined — no padding.`,
+  deep:     `Full synthesis. For each relevant thinker lens, explain how they would frame the problem, what they would look for, and what they would do. Then synthesize all lenses into a unified response. Surface contradictions between frameworks explicitly and resolve them. End with a single clear recommendation.`
+};
+
+const BUILT_IN_PRESETS = {
+  deal:        { label: "Deal Evaluation",    domains: ["arbitrage","execution"], thinkers: null, depth: "balanced", wargame: true,  model: "https://claude.ai" },
+  performance: { label: "Peak Performance",   domains: ["neuro","excellence","ceiling"],    thinkers: null, depth: "deep",     wargame: false, model: "https://claude.ai" },
+  strategy:    { label: "Strategic Decision", domains: ["arbitrage","excellence","execution","ceiling"], thinkers: null, depth: "deep", wargame: true, model: "https://claude.ai" },
+  super:       { label: "Superintelligence",  domains: ["excellence","ceiling","neuro","ai"], thinkers: null, depth: "deep", wargame: false, model: "https://claude.ai" },
+  compete:      { label: "Win the Game",      domains: ["performance","military","decision","psychology","excellence"], thinkers: null, depth: "deep", wargame: true,  model: "https://claude.ai" },
+  understand:   { label: "Understand Everything", domains: ["mathematics","philosophy","economics","anthropology","environment"], thinkers: null, depth: "deep", wargame: false, model: "https://claude.ai" },
+  omniscient:   { label: "Omniscient",        domains: ["decision","psychology","philosophy","military","execution","arbitrage","power","geopolitics"], thinkers: null, depth: "deep", wargame: true,  model: "https://claude.ai" },
+  buildco:      { label: "Build a Company",    domains: ["business","technology","execution","creativity","decision"], thinkers: null, depth: "balanced", wargame: true, model: "https://chatgpt.com" },
+  bigpicture:   { label: "Big Picture",        domains: ["geopolitics","economics","environment","anthropology","philosophy"], thinkers: null, depth: "deep", wargame: false, model: "https://claude.ai" },
+  fullspectrum: { label: "Full Spectrum",      domains: ["decision","psychology","military","execution","arbitrage"], thinkers: null, depth: "deep", wargame: true,  model: "https://claude.ai" },
+  lifeos:       { label: "Life OS",           domains: ["spiritual","philosophy","excellence","psychology","holistic"], thinkers: null, depth: "deep", wargame: false, model: "https://claude.ai" },
+  worldview:    { label: "World View",        domains: ["geopolitics","power","arbitrage","decision"], thinkers: null, depth: "balanced", wargame: true, model: "https://claude.ai" },
+  health:       { label: "Health & Healing",    domains: ["longevity","holistic","naturopathic"], thinkers: null, depth: "deep", wargame: false, model: "https://claude.ai" },
+  powerread:   { label: "Power & Money",      domains: ["power","arbitrage"], thinkers: null, depth: "deep", wargame: true,  model: "https://claude.ai" },
+  build:       { label: "Build Mode",         domains: ["execution","ai"],        thinkers: null, depth: "balanced", wargame: false, model: "https://chatgpt.com" },
+};
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let selectedThinkers = new Set();
+let selectedModel = "https://claude.ai";
+let selectedDepth = "sharp";
+let wargame = false;
+let routingDebounce = null;
+
+// Init defaults — select all thinkers in arbitrage, ai, excellence
+function initDefaultSelection() {
+  ["arbitrage","ai","excellence"].forEach(dk => {
+    DOMAINS[dk].people.forEach(p => selectedThinkers.add(domainKey(dk, p.name)));
+  });
+}
+
+function domainKey(dk, name) { return dk + '::' + name; }
+function parseDK(key) { const i = key.indexOf('::'); return { domain: key.slice(0,i), name: key.slice(i+2) }; }
+
+// ═══════════════════════════════════════════════════════════
+// STORAGE HELPERS
+// ═══════════════════════════════════════════════════════════
+function storageGet(k, fallback) {
+  try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
+}
+function storageSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+
+function getHistory()       { return storageGet('io_history', []); }
+function saveHistory(h)     { storageSet('io_history', h.slice(0,20)); }
+function getCustom()        { return storageGet('io_custom', []); }
+function saveCustom(c)      { storageSet('io_custom', c); }
+function getUserPresets()   { return storageGet('io_presets', {}); }
+function saveUserPresets(p) { storageSet('io_presets', p); }
+
+// ═══════════════════════════════════════════════════════════
+// RENDER THINKER DOMAINS
+// ═══════════════════════════════════════════════════════════
+function renderDomains() {
+  const container = document.getElementById('thinkerDomains');
+  container.innerHTML = '';
+  const custom = getCustom();
+
+  const allDomains = { ...DOMAINS };
+  if (custom.length) {
+    allDomains._custom = { label: "Custom Thinkers", color: "custom", keywords: [], people: custom.map(c => ({ name: c.name, framework: c.framework })) };
+  }
+
+  Object.entries(allDomains).forEach(([dk, domain]) => {
+    const domainPeople = domain.people;
+    const selectedInDomain = domainPeople.filter(p => selectedThinkers.has(domainKey(dk, p.name)));
+    const allSelected = selectedInDomain.length === domainPeople.length;
+    const someSelected = selectedInDomain.length > 0;
+
+    const block = document.createElement('div');
+    block.className = 'domain-block';
+
+    const header = document.createElement('div');
+    header.className = 'domain-header';
+
+    const toggle = document.createElement('div');
+    toggle.className = `domain-toggle ${domain.color}${!someSelected ? ' inactive' : ''}`;
+    toggle.textContent = domain.label;
+    toggle.title = allSelected ? 'Click to deselect all' : 'Click to select all';
+
+    const selectAll = document.createElement('span');
+    selectAll.className = 'domain-select-all';
+    selectAll.textContent = allSelected ? 'deselect all' : someSelected ? `${selectedInDomain.length}/${domainPeople.length} selected` : 'select all';
+
+    toggle.addEventListener('click', () => {
+      if (allSelected) {
+        domainPeople.forEach(p => selectedThinkers.delete(domainKey(dk, p.name)));
+      } else {
+        domainPeople.forEach(p => selectedThinkers.add(domainKey(dk, p.name)));
+      }
+      renderDomains(); updatePreview();
+    });
+    selectAll.addEventListener('click', () => {
+      if (allSelected) {
+        domainPeople.forEach(p => selectedThinkers.delete(domainKey(dk, p.name)));
+      } else {
+        domainPeople.forEach(p => selectedThinkers.add(domainKey(dk, p.name)));
+      }
+      renderDomains(); updatePreview();
+    });
+
+    header.appendChild(toggle);
+    header.appendChild(selectAll);
+
+    const grid = document.createElement('div');
+    grid.className = 'thinker-grid';
+
+    domainPeople.forEach(p => {
+      const key = domainKey(dk, p.name);
+      const pill = document.createElement('button');
+      const isSelected = selectedThinkers.has(key);
+      pill.className = `thinker-pill${isSelected ? ' selected ' + domain.color : ''}`;
+      pill.textContent = p.name;
+      pill.title = p.framework;
+      pill.addEventListener('click', () => {
+        if (selectedThinkers.has(key)) selectedThinkers.delete(key);
+        else selectedThinkers.add(key);
+        renderDomains(); updatePreview();
+      });
+      grid.appendChild(pill);
+    });
+
+    block.appendChild(header);
+    block.appendChild(grid);
+    container.appendChild(block);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// ROUTING INTELLIGENCE
+// ═══════════════════════════════════════════════════════════
+function routeQuestion(question) {
+  if (!question || question.length < 8) {
+    document.getElementById('routingBar').classList.remove('visible');
+    return;
+  }
+  const q = question.toLowerCase();
+  const scores = {};
+  Object.entries(DOMAINS).forEach(([dk, domain]) => {
+    scores[dk] = domain.keywords.filter(kw => q.includes(kw)).length;
+  });
+  const maxScore = Math.max(...Object.values(scores));
+  if (maxScore === 0) { document.getElementById('routingBar').classList.remove('visible'); return; }
+  const suggested = Object.entries(scores).filter(([,s]) => s >= maxScore * 0.6 && s > 0).map(([dk]) => dk);
+  if (!suggested.length) { document.getElementById('routingBar').classList.remove('visible'); return; }
+  const names = suggested.map(dk => `<strong>${DOMAINS[dk].label}</strong>`).join(', ');
+  const bar = document.getElementById('routingBar');
+  bar.innerHTML = `Suggested lenses for this question: ${names}`;
+  bar.classList.add('visible');
+
+  // Highlight suggested pills
+  document.querySelectorAll('.thinker-pill').forEach(pill => pill.classList.remove('suggested'));
+  suggested.forEach(dk => {
+    DOMAINS[dk].people.forEach(p => {
+      document.querySelectorAll('.thinker-pill').forEach(pill => {
+        if (pill.textContent === p.name) pill.classList.add('suggested');
+      });
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// BUILD PROMPT
+// ═══════════════════════════════════════════════════════════
+function buildPrompt(question) {
+  const byDomain = {};
+  selectedThinkers.forEach(key => {
+    const { domain, name } = parseDK(key);
+    if (!byDomain[domain]) byDomain[domain] = [];
+    // Find framework
+    const allDomains = { ...DOMAINS };
+    const custom = getCustom();
+    if (custom.length) allDomains._custom = { people: custom };
+    const person = (allDomains[domain]?.people || []).find(p => p.name === name);
+    if (person) byDomain[domain].push(person);
+  });
+
+  const lensBlocks = [];
+  Object.entries(byDomain).forEach(([dk, people]) => {
+    const label = dk === '_custom' ? 'CUSTOM THINKERS' : (DOMAINS[dk]?.label?.toUpperCase() || dk.toUpperCase());
+    const lines = people.map(p => `  • ${p.name}: ${p.framework}`).join('\n');
+    lensBlocks.push(`[${label}]\n${lines}`);
+  });
+
+  const thinkerNames = [...selectedThinkers].map(k => parseDK(k).name);
+  const depthInstruction = DEPTH_INSTRUCTIONS[selectedDepth];
+
+  const wargameBlock = wargame ? `\nWAR GAME REQUIREMENT:\nAfter your synthesis, add a section titled "Counter-Case" that steelmans the strongest argument AGAINST your recommendation. What would the smartest opponent of this position argue? What does the counter-evidence look like? Resolve the tension explicitly.\n` : '';
+
+  const prompt = `You are a synthesis intelligence drawing on the cognitive frameworks of the world's leading minds.
+
+For the question below, apply the frameworks of the following thinkers — grouped by domain — to generate a response that integrates their most relevant approaches:
+
+${lensBlocks.join('\n\n')}
+
+DEPTH:
+${depthInstruction}
+${wargameBlock}
+QUESTION:
+${question}
+
+Begin your response now. Weave the frameworks into a unified, actionable response — do not list thinkers mechanically. Where frameworks conflict, name the conflict and resolve it. Where they converge, that convergence is the signal.`;
+
+  return { prompt, thinkerNames };
+}
+
+// ═══════════════════════════════════════════════════════════
+// LIVE PREVIEW
+// ═══════════════════════════════════════════════════════════
+function updatePreview() {
+  const question = document.getElementById('question').value.trim();
+  const preview = document.getElementById('livePreview');
+  const countEl = document.getElementById('previewCount');
+
+  if (selectedThinkers.size === 0) {
+    preview.classList.remove('has-content');
+    preview.textContent = '';
+    countEl.textContent = '';
+    return;
+  }
+
+  const { prompt, thinkerNames } = buildPrompt(question || '[your question will appear here]');
+  const wordCount = prompt.split(/\s+/).length;
+  preview.textContent = prompt;
+  preview.classList.add('has-content');
+  countEl.textContent = `${thinkerNames.length} thinkers · ~${wordCount} words`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// CLIPBOARD
+// ═══════════════════════════════════════════════════════════
+async function copyToClipboard(text) {
+  try { await navigator.clipboard.writeText(text); return true; }
+  catch {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    return true;
+  }
+}
+
+function flashStatus(msg) {
+  const el = document.getElementById('statusMsg');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2400);
+}
+
+// ═══════════════════════════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════════════════════════
+function addToHistory(question, thinkerNames, model, depth) {
+  const h = getHistory();
+  h.unshift({ question, thinkers: thinkerNames, model, depth, ts: Date.now() });
+  saveHistory(h.slice(0,20));
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  const h = getHistory();
+  if (!h.length) {
+    list.innerHTML = '<div class="empty-state">No history yet. Questions you ask will appear here.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  h.forEach((entry, idx) => {
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    const date = new Date(entry.ts);
+    const dateStr = date.toLocaleDateString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+    const modelName = entry.model ? entry.model.replace('https://','').replace('.ai','').replace('.com','').split('/')[0] : 'unknown';
+    item.innerHTML = `
+      <div class="history-question">${entry.question}</div>
+      <div class="history-meta">
+        <span>${dateStr}</span>
+        <span>${entry.thinkers?.length || 0} thinkers</span>
+        <span>${modelName}</span>
+        <span>${entry.depth || 'sharp'}</span>
+      </div>
+      <div class="history-actions">
+        <button class="history-reuse" data-idx="${idx}">Reload into Oracle</button>
+        <button class="history-del" data-idx="${idx}">Delete</button>
+      </div>`;
+    list.appendChild(item);
+  });
+
+  list.querySelectorAll('.history-reuse').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const entry = getHistory()[+btn.dataset.idx];
+      document.getElementById('question').value = entry.question;
+      // Switch to oracle tab
+      switchTab('oracle');
+      updatePreview();
+      flashStatus('✓ Question reloaded');
+    });
+  });
+  list.querySelectorAll('.history-del').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const h = getHistory();
+      h.splice(+btn.dataset.idx, 1);
+      saveHistory(h);
+      renderHistory();
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// CUSTOM THINKERS
+// ═══════════════════════════════════════════════════════════
+function renderCustomList() {
+  const list = document.getElementById('customList');
+  const custom = getCustom();
+  if (!custom.length) { list.innerHTML = ''; return; }
+  list.innerHTML = '';
+  custom.forEach((c, idx) => {
+    const item = document.createElement('div');
+    item.className = 'custom-item';
+    item.innerHTML = `
+      <div>
+        <div class="custom-item-name">${c.name}</div>
+        <div class="custom-item-fw">${c.framework}</div>
+      </div>
+      <div class="custom-item-del" data-idx="${idx}">✕</div>`;
+    list.appendChild(item);
+  });
+  list.querySelectorAll('.custom-item-del').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const custom = getCustom();
+      // Remove from selectedThinkers
+      selectedThinkers.delete(domainKey('_custom', custom[+btn.dataset.idx].name));
+      custom.splice(+btn.dataset.idx, 1);
+      saveCustom(custom);
+      renderCustomList(); renderDomains(); updatePreview();
+    });
+  });
+}
+
+document.getElementById('addCustomBtn').addEventListener('click', () => {
+  const name = document.getElementById('customName').value.trim();
+  const fw   = document.getElementById('customFramework').value.trim();
+  if (!name || !fw) return;
+  const custom = getCustom();
+  if (custom.find(c => c.name === name)) { alert('A thinker with that name already exists.'); return; }
+  custom.push({ name, framework: fw });
+  saveCustom(custom);
+  // Auto-select new thinker
+  selectedThinkers.add(domainKey('_custom', name));
+  document.getElementById('customName').value = '';
+  document.getElementById('customFramework').value = '';
+  renderCustomList(); renderDomains(); updatePreview();
+});
+
+// ═══════════════════════════════════════════════════════════
+// PRESETS
+// ═══════════════════════════════════════════════════════════
+function applyPreset(preset) {
+  selectedThinkers.clear();
+  if (preset.thinkers) {
+    preset.thinkers.forEach(key => selectedThinkers.add(key));
+  } else if (preset.domains) {
+    preset.domains.forEach(dk => {
+      if (DOMAINS[dk]) DOMAINS[dk].people.forEach(p => selectedThinkers.add(domainKey(dk, p.name)));
+    });
+  }
+  selectedDepth = preset.depth || 'sharp';
+  wargame = preset.wargame || false;
+  selectedModel = preset.model || 'https://claude.ai';
+  document.getElementById('wargameToggle').checked = wargame;
+  document.querySelectorAll('.depth-btn').forEach(b => { b.classList.toggle('selected', b.dataset.depth === selectedDepth); });
+  document.querySelectorAll('.model-btn').forEach(b => { b.classList.toggle('selected', b.dataset.url === selectedModel); });
+  renderDomains(); updatePreview();
+}
+
+function renderPresets() {
+  const row = document.getElementById('presetRow');
+  // Remove user preset buttons (keep built-ins and save button)
+  row.querySelectorAll('.user-preset').forEach(b => b.remove());
+
+  const userPresets = getUserPresets();
+  const saveBtn = document.getElementById('savePresetBtn');
+  Object.entries(userPresets).forEach(([id, preset]) => {
+    const btn = document.createElement('button');
+    btn.className = 'preset-btn user-preset';
+    btn.innerHTML = `${preset.label}<span class="preset-delete" data-id="${id}">✕</span>`;
+    btn.addEventListener('click', (e) => {
+      if (e.target.classList.contains('preset-delete')) return;
+      applyPreset(preset);
+    });
+    btn.querySelector('.preset-delete').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const p = getUserPresets(); delete p[id]; saveUserPresets(p); renderPresets();
+    });
+    row.insertBefore(btn, saveBtn);
+  });
+}
+
+document.querySelectorAll('.preset-btn[data-preset]').forEach(btn => {
+  btn.addEventListener('click', () => applyPreset(BUILT_IN_PRESETS[btn.dataset.preset]));
+});
+
+document.getElementById('savePresetBtn').addEventListener('click', () => {
+  document.getElementById('presetModal').classList.add('open');
+  document.getElementById('presetNameInput').focus();
+});
+document.getElementById('presetCancel').addEventListener('click', () => {
+  document.getElementById('presetModal').classList.remove('open');
+  document.getElementById('presetNameInput').value = '';
+});
+document.getElementById('presetConfirm').addEventListener('click', () => {
+  const name = document.getElementById('presetNameInput').value.trim();
+  if (!name) return;
+  const id = 'u_' + Date.now();
+  const presets = getUserPresets();
+  presets[id] = {
+    label: name,
+    thinkers: [...selectedThinkers],
+    depth: selectedDepth,
+    wargame,
+    model: selectedModel
+  };
+  saveUserPresets(presets);
+  renderPresets();
+  document.getElementById('presetModal').classList.remove('open');
+  document.getElementById('presetNameInput').value = '';
+  flashStatus('✓ Preset saved');
+});
+
+// ═══════════════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════════════
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
+  if (name === 'history') renderHistory();
+  if (name === 'custom') renderCustomList();
+}
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+
+// ═══════════════════════════════════════════════════════════
+// MAIN ACTIONS
+// ═══════════════════════════════════════════════════════════
+document.getElementById('fireBtn').addEventListener('click', async () => {
+  const question = document.getElementById('question').value.trim();
+  if (!question) { document.getElementById('question').focus(); return; }
+  if (!selectedThinkers.size) { flashStatus('Select at least one thinker'); return; }
+  const { prompt, thinkerNames } = buildPrompt(question);
+  await copyToClipboard(prompt);
+  addToHistory(question, thinkerNames, selectedModel, selectedDepth);
+  flashStatus('✓ Prompt copied — paste into the tab opening now');
+  setTimeout(() => window.open(selectedModel, '_blank'), 300);
+});
+
+document.getElementById('copyBtn').addEventListener('click', async () => {
+  const question = document.getElementById('question').value.trim();
+  if (!question) { document.getElementById('question').focus(); return; }
+  if (!selectedThinkers.size) { flashStatus('Select at least one thinker'); return; }
+  const { prompt, thinkerNames } = buildPrompt(question);
+  await copyToClipboard(prompt);
+  addToHistory(question, thinkerNames, selectedModel, selectedDepth);
+  flashStatus('✓ Copied to clipboard');
+});
+
+document.querySelectorAll('.model-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedModel = btn.dataset.url;
+  });
+});
+
+document.querySelectorAll('.depth-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.depth-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedDepth = btn.dataset.depth;
+    updatePreview();
+  });
+});
+
+document.getElementById('wargameToggle').addEventListener('change', (e) => {
+  wargame = e.target.checked;
+  updatePreview();
+});
+
+document.getElementById('question').addEventListener('input', () => {
+  clearTimeout(routingDebounce);
+  routingDebounce = setTimeout(() => {
+    routeQuestion(document.getElementById('question').value);
+    updatePreview();
+  }, 350);
+});
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+initDefaultSelection();
+renderDomains();
+renderPresets();
+updatePreview();
+</script>
+</body>
+</html>
