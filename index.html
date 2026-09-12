@@ -446,6 +446,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
     <button class="preset-btn" data-preset="health">Health & Healing</button>
     <button class="preset-btn" data-preset="powerread">Power & Money</button>
     <button class="preset-btn preset-save" id="savePresetBtn">+ Save Current</button>
+    <button class="preset-btn" id="deselectAllBtn" style="border-color:var(--red);color:var(--red-hi);margin-left:auto;flex-shrink:0;">✕ Deselect All</button>
   </div>
 
   <!-- ACTION -->
@@ -1414,6 +1415,15 @@ function renderPresets() {
 
 document.querySelectorAll('.preset-btn[data-preset]').forEach(btn => {
   btn.addEventListener('click', () => applyPreset(BUILT_IN_PRESETS[btn.dataset.preset]));
+});
+
+document.getElementById('deselectAllBtn').addEventListener('click', () => {
+  selectedThinkers.clear();
+  document.getElementById('question').value = '';
+  renderDomains();
+  updatePreview();
+  saveSession();
+  flashStatus('✓ Cleared');
 });
 
 document.getElementById('savePresetBtn').addEventListener('click', () => {
