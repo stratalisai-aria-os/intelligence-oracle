@@ -383,6 +383,9 @@ hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
       <textarea id="question" placeholder="What decision, problem, or question do you want the world's best minds to weigh in on?" rows="5"></textarea>
     </div>
     <div id="routingBar" class="routing-bar"></div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:20px;">
+      <button id="refreshBtn" style="font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:500;padding:7px 16px;border-radius:3px;border:1px solid var(--accent);color:var(--accent-hi);background:rgba(74,111,165,0.12);cursor:pointer;transition:all 0.15s;letter-spacing:0.04em;">↺ Refresh</button>
+    </div>
   </div>
 
   <!-- THINKER SELECTION -->
@@ -446,7 +449,6 @@ hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
     <button class="preset-btn" data-preset="health">Health & Healing</button>
     <button class="preset-btn" data-preset="powerread">Power & Money</button>
     <button class="preset-btn preset-save" id="savePresetBtn">+ Save Current</button>
-    <button class="preset-btn" id="deselectAllBtn" style="border-color:var(--red);color:var(--red-hi);margin-left:auto;flex-shrink:0;">✕ Deselect All</button>
   </div>
 
   <!-- ACTION -->
@@ -1417,13 +1419,20 @@ document.querySelectorAll('.preset-btn[data-preset]').forEach(btn => {
   btn.addEventListener('click', () => applyPreset(BUILT_IN_PRESETS[btn.dataset.preset]));
 });
 
-document.getElementById('deselectAllBtn').addEventListener('click', () => {
+document.getElementById('refreshBtn').addEventListener('click', () => {
   selectedThinkers.clear();
+  selectedModel = "https://claude.ai";
+  selectedDepth = "sharp";
+  wargame = false;
   document.getElementById('question').value = '';
+  document.getElementById('wargameToggle').checked = false;
+  document.querySelectorAll('.model-btn').forEach(b => b.classList.toggle('selected', b.dataset.url === 'https://claude.ai'));
+  document.querySelectorAll('.depth-btn').forEach(b => b.classList.toggle('selected', b.dataset.depth === 'sharp'));
+  document.getElementById('routingBar').classList.remove('visible');
   renderDomains();
   updatePreview();
   saveSession();
-  flashStatus('✓ Cleared');
+  flashStatus('✓ Refreshed');
 });
 
 document.getElementById('savePresetBtn').addEventListener('click', () => {
