@@ -1011,13 +1011,41 @@ let selectedThinkers = new Set();
 let selectedModel = "https://claude.ai";
 let selectedDepth = "sharp";
 let wargame = false;
+
+// ── PERSISTENCE KEYS ──────────────────────────────────────────
+const PERSIST_KEY = 'io_session';
+
+function saveSession() {
+  try {
+    localStorage.setItem(PERSIST_KEY, JSON.stringify({
+      thinkers: [...selectedThinkers],
+      model: selectedModel,
+      depth: selectedDepth,
+      wargame: wargame,
+      question: document.getElementById('question')?.value || ''
+    }));
+  } catch(e) {}
+}
+
+function loadSession() {
+  try {
+    const raw = localStorage.getItem(PERSIST_KEY);
+    if (!raw) return false;
+    const s = JSON.parse(raw);
+    if (s.thinkers && s.thinkers.length) {
+      selectedThinkers = new Set(s.thinkers);
+    }
+    if (s.model) selectedModel = s.model;
+    if (s.depth) selectedDepth = s.depth;
+    if (typeof s.wargame === 'boolean') wargame = s.wargame;
+    return { question: s.question || '' };
+  } catch(e) { return false; }
+}
 let routingDebounce = null;
 
 // Init defaults — select all thinkers in arbitrage, ai, excellence
 function initDefaultSelection() {
-  ["arbitrage","ai","excellence"].forEach(dk => {
-    DOMAINS[dk].people.forEach(p => selectedThinkers.add(domainKey(dk, p.name)));
-  });
+  // No default selection — start blank unless session restored
 }
 
 function domainKey(dk, name) { return dk + '::' + name; }
@@ -1078,7 +1106,7 @@ function renderDomains() {
       } else {
         domainPeople.forEach(p => selectedThinkers.add(domainKey(dk, p.name)));
       }
-      renderDomains(); updatePreview();
+      renderDomains(); updatePreview(); saveSession();
     });
     selectAll.addEventListener('click', () => {
       if (allSelected) {
@@ -1086,7 +1114,7 @@ function renderDomains() {
       } else {
         domainPeople.forEach(p => selectedThinkers.add(domainKey(dk, p.name)));
       }
-      renderDomains(); updatePreview();
+      renderDomains(); updatePreview(); saveSession();
     });
 
     header.appendChild(toggle);
@@ -1105,7 +1133,7 @@ function renderDomains() {
       pill.addEventListener('click', () => {
         if (selectedThinkers.has(key)) selectedThinkers.delete(key);
         else selectedThinkers.add(key);
-        renderDomains(); updatePreview();
+        renderDomains(); updatePreview(); saveSession();
       });
       grid.appendChild(pill);
     });
@@ -1358,7 +1386,7 @@ function applyPreset(preset) {
   document.getElementById('wargameToggle').checked = wargame;
   document.querySelectorAll('.depth-btn').forEach(b => { b.classList.toggle('selected', b.dataset.depth === selectedDepth); });
   document.querySelectorAll('.model-btn').forEach(b => { b.classList.toggle('selected', b.dataset.url === selectedModel); });
-  renderDomains(); updatePreview();
+  renderDomains(); updatePreview(); saveSession();
 }
 
 function renderPresets() {
@@ -1455,6 +1483,7 @@ document.querySelectorAll('.model-btn').forEach(btn => {
     document.querySelectorAll('.model-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
     selectedModel = btn.dataset.url;
+    saveSession();
   });
 });
 
@@ -1463,13 +1492,13 @@ document.querySelectorAll('.depth-btn').forEach(btn => {
     document.querySelectorAll('.depth-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
     selectedDepth = btn.dataset.depth;
-    updatePreview();
+    updatePreview(); saveSession();
   });
 });
 
 document.getElementById('wargameToggle').addEventListener('change', (e) => {
   wargame = e.target.checked;
-  updatePreview();
+  updatePreview(); saveSession();
 });
 
 document.getElementById('question').addEventListener('input', () => {
@@ -1477,6 +1506,7 @@ document.getElementById('question').addEventListener('input', () => {
   routingDebounce = setTimeout(() => {
     routeQuestion(document.getElementById('question').value);
     updatePreview();
+    saveSession();
   }, 350);
 });
 
@@ -1484,8 +1514,28 @@ document.getElementById('question').addEventListener('input', () => {
 // INIT
 // ═══════════════════════════════════════════════════════════
 initDefaultSelection();
+const restored = loadSession();
 renderDomains();
 renderPresets();
+
+// Restore UI state from session
+if (restored) {
+  // Restore question
+  if (restored.question) {
+    document.getElementById('question').value = restored.question;
+  }
+  // Restore model button
+  document.querySelectorAll('.model-btn').forEach(b => {
+    b.classList.toggle('selected', b.dataset.url === selectedModel);
+  });
+  // Restore depth button
+  document.querySelectorAll('.depth-btn').forEach(b => {
+    b.classList.toggle('selected', b.dataset.depth === selectedDepth);
+  });
+  // Restore wargame toggle
+  document.getElementById('wargameToggle').checked = wargame;
+}
+
 updatePreview();
 </script>
 </body>
