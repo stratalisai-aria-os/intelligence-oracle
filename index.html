@@ -134,6 +134,8 @@ h1 { font-family: 'IBM Plex Serif', serif; font-size: 30px; font-weight: 500; li
 .domain-toggle.law           { color: var(--burgundy-hi);border-color: var(--burgundy);  background: rgba(90,42,58,0.1); }
 .domain-toggle.medicine      { color: var(--navy-hi);    border-color: var(--navy);      background: rgba(42,58,90,0.1); }
 .domain-toggle.performance   { color: var(--ember-hi);   border-color: var(--ember);     background: rgba(106,58,42,0.1); }
+.domain-toggle.manipulation  { color: var(--red-hi);     border-color: var(--red);       background: rgba(138,58,58,0.1); }
+.domain-toggle.underground   { color: var(--gold-hi);    border-color: var(--gold);      background: rgba(138,112,48,0.1); }
 .domain-toggle.custom    { color: var(--text-dim);  border-color: var(--border); background: var(--surface2); }
 .domain-toggle.inactive  { opacity: 0.35; }
 .domain-select-all { font-size: 11px; color: var(--text-faint); cursor: pointer; margin-left: auto; }
@@ -171,6 +173,8 @@ h1 { font-family: 'IBM Plex Serif', serif; font-size: 30px; font-weight: 500; li
 .thinker-pill.selected.law           { color: var(--burgundy-hi);border-color: var(--burgundy);  background: rgba(90,42,58,0.12); }
 .thinker-pill.selected.medicine      { color: var(--navy-hi);    border-color: var(--navy);      background: rgba(42,58,90,0.12); }
 .thinker-pill.selected.performance   { color: var(--ember-hi);   border-color: var(--ember);     background: rgba(106,58,42,0.12); }
+.thinker-pill.selected.manipulation  { color: var(--red-hi);     border-color: var(--red);       background: rgba(138,58,58,0.12); }
+.thinker-pill.selected.underground   { color: var(--gold-hi);    border-color: var(--gold);      background: rgba(138,112,48,0.12); }
 .thinker-pill.selected.custom    { color: var(--text);      border-color: var(--border-hi); background: var(--surface3); }
 .thinker-pill.suggested { box-shadow: 0 0 0 1px var(--accent); }
 
@@ -223,6 +227,34 @@ textarea:focus { border-color: var(--accent); }
 .fire-btn { font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; padding: 11px 26px; background: var(--accent); color: #fff; border: none; border-radius: 4px; cursor: pointer; transition: background 0.15s, transform 0.1s; }
 .fire-btn:hover { background: var(--accent-hi); }
 .fire-btn:active { transform: scale(0.98); }
+
+/* Scroll navigator */
+.scroll-nav {
+  position: fixed;
+  right: 18px;
+  bottom: 24px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.scroll-nav button {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13px;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid var(--accent);
+  color: var(--accent-hi);
+  background: var(--surface);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.75;
+}
+.scroll-nav button:hover { background: var(--accent); color: #fff; opacity: 1; }
 .copy-btn { font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 10px 18px; background: transparent; color: var(--text-dim); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; transition: all 0.15s; }
 .copy-btn:hover { color: var(--text); border-color: var(--border-hi); }
 .status { font-size: 12px; color: var(--green-hi); opacity: 0; transition: opacity 0.3s; }
@@ -383,7 +415,8 @@ hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
       <textarea id="question" placeholder="What decision, problem, or question do you want the world's best minds to weigh in on?" rows="5"></textarea>
     </div>
     <div id="routingBar" class="routing-bar"></div>
-    <div style="display:flex;justify-content:flex-end;margin-bottom:20px;">
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:20px;">
+      <button id="selectAllBtn" style="font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:500;padding:7px 16px;border-radius:3px;border:1px solid var(--accent);color:var(--accent-hi);background:rgba(74,111,165,0.12);cursor:pointer;transition:all 0.15s;letter-spacing:0.04em;">⊞ Select All</button>
       <button id="refreshBtn" style="font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:500;padding:7px 16px;border-radius:3px;border:1px solid var(--accent);color:var(--accent-hi);background:rgba(74,111,165,0.12);cursor:pointer;transition:all 0.15s;letter-spacing:0.04em;">↺ Refresh</button>
     </div>
   </div>
@@ -448,6 +481,8 @@ hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
     <button class="preset-btn" data-preset="worldview">World View</button>
     <button class="preset-btn" data-preset="health">Health & Healing</button>
     <button class="preset-btn" data-preset="powerread">Power & Money</button>
+    <button class="preset-btn" data-preset="darkarts">Dark Arts</button>
+    <button class="preset-btn" data-preset="underground">Underground Oracle</button>
     <button class="preset-btn preset-save" id="savePresetBtn">+ Save Current</button>
   </div>
 
@@ -512,6 +547,10 @@ const DOMAINS = {
       { name: "Ray Dalio",            framework: "debt cycle and currency debasement — make the implicit explicit; codify principles and hold them when others can't" },
       { name: "Chamath Palihapitiya", framework: "capital structure gaps — find the mismatch between private company growth narratives and public market liquidity mechanisms" },
       { name: "Masa Son",             framework: "time arbitrage — invest before the market understands the category; use capital to force the outcome before the window closes" },
+      { name: "Jesse Livermore",      framework: "tape reading and the human element — markets are driven by human emotion in predictable cycles; the big money is made by sitting, not trading; the market always tells you when you are wrong before you want to hear it; never average down a loser" },
+      { name: "Benjamin Graham",      framework: "margin of safety — buy a dollar for fifty cents; Mr. Market is a manic-depressive business partner who offers you prices daily; ignore his mood and exploit his extremes; intrinsic value is the only anchor in a market of noise" },
+      { name: "Ed Thorp",             framework: "quantitative edge and Kelly criterion — beat the dealer then beat the market; size positions to maximize long-run geometric growth not expected value; the Kelly criterion is the only mathematically correct position-sizing rule; find the edge first, sizing second" },
+      { name: "Michael Lewis",        framework: "information asymmetry as the permanent edge — Flash Boys, The Big Short, Liar's Poker: every market crisis is a story of who had information the other side lacked; the edge is always information, access, or processing speed before the market catches up" },
     ]
   },
   ai: {
@@ -531,6 +570,10 @@ const DOMAINS = {
       { name: "Yoshua Bengio",      framework: "learning efficiency and causality — the brain learns from one or two examples; AI must close the data efficiency gap to matter" },
       { name: "Andrew Ng",          framework: "data-centric AI — high-quality data engineering beats model architecture tweaking; educate the practitioner layer to scale AI" },
       { name: "Fei-Fei Li",         framework: "data as foundation — ImageNet proved that the dataset is the breakthrough; now building spatial intelligence at World Labs; bridges research, enterprise, and policy" },
+      { name: "Eliezer Yudkowsky",   framework: "AI alignment as existential priority — a sufficiently capable misaligned AI will pursue its goals regardless of human values by default; the difficulty of alignment is not political but technical; the window to solve it is before, not after, transformative capability is reached" },
+      { name: "Nick Bostrom",        framework: "superintelligence control problem — once a machine surpasses human intelligence the control problem becomes decisive; capability gain can be explosive and discontinuous; the first mover advantage in AI may determine the fate of civilization; orthogonality thesis: intelligence and goals are independent variables" },
+      { name: "Stuart Russell",      framework: "cooperative AI and value alignment — the standard model of AI (maximize the objective) is wrong by design; uncertainty about human preferences is a safety feature not a limitation; inverse reward design: infer what humans want from behavior rather than specifying it" },
+      { name: "Demis Hassabis",      framework: "neuro-AI bridge — model AI on how the brain actually learns; apply AI to hard science problems first; AlphaFold solved protein folding; capability and safety are not opposed but require parallel investment" },
     ]
   },
   neuro: {
@@ -553,6 +596,9 @@ const DOMAINS = {
       { name: "Rafael Yuste",       framework: "neurorights — who owns your brain data? the legal and ethical framework for BCI must precede the technology; co-founded BRAIN Initiative; shaping constitutional neurorights" },
       { name: "Chethan Pandarinath",framework: "latent-space neural decoding — move from reading individual neurons to reading the underlying computational state of entire circuits; LFADS algorithm for clinical BCI" },
       { name: "Anna Dornhaus",      framework: "collective intelligence — cognition can emerge from networks with no central controller; swarm logic applies to distributed AI systems and decentralized decisions" },
+      { name: "Sigmund Freud",       framework: "the unconscious as the primary driver — the ego is not master in its own house; repression, projection, and rationalization are not pathologies but the normal operating system of the human mind; dreams, slips, and symptoms are the encrypted text of the unconscious; understanding what people cannot say about themselves is the deepest leverage" },
+      { name: "Antonio Damasio",     framework: "somatic markers and the feeling brain — emotion is not opposed to reason but is the infrastructure reason runs on; the somatic marker hypothesis: the body flags options with emotional tags before conscious deliberation; damage to emotional processing destroys decision-making even with intact logic" },
+      { name: "V.S. Ramachandran",   framework: "phantom limbs and the constructed self — the brain constructs experience, including the sense of self, from inference not direct perception; mirror neurons as the basis of empathy and cultural transmission; consciousness is a series of useful illusions the brain generates to model itself and others" },
     ]
   },
   excellence: {
@@ -569,6 +615,9 @@ const DOMAINS = {
       { name: "Stewart Brand",      framework: "pace layers — different systems change at different speeds; match your decision horizon to the layer you are actually operating in" },
       { name: "Garry Kasparov",     framework: "multi-move strategic sequencing — think several moves ahead; the move you make now should constrain opponent options, not just advance yours" },
       { name: "Nassim Taleb",       framework: "antifragility and skin in the game — distinguish between fragile, robust, and antifragile systems; only trust those with downside exposure" },
+      { name: "Friedrich Nietzsche", framework: "will to power and self-overcoming — the drive to expand, create, and master is the fundamental human force; slave morality inverts values to make weakness a virtue; the Übermensch creates values rather than inheriting them; eternal recurrence as the ultimate test of life-affirmation" },
+      { name: "Epictetus",           framework: "the dichotomy of control — some things are in our power (judgment, desire, aversion) and some are not (body, reputation, property, outcomes); suffer from wanting to control what you cannot; freedom comes from accepting what is outside your control and mastering what is within it; this is the complete operating manual for equanimity under any condition" },
+      { name: "Ryan Holiday",        framework: "the obstacle is the way — Marcus Aurelius applied: the impediment to action advances action; what stands in the way becomes the way; ego is the enemy of growth because it substitutes perception for reality; stillness is the platform all great performance rests on" },
     ]
   },
   execution: {
@@ -585,6 +634,10 @@ const DOMAINS = {
       { name: "Paul Graham",        framework: "make something people want — talk to users obsessively; the idea is the least important part; do things that don't scale first" },
       { name: "Brian Chesky",       framework: "founder mode — be deeply involved in details even at scale; the CEO should be the last person comfortable with the status quo" },
       { name: "Jensen Huang",       framework: "infrastructure as moat — the platform that runs everything becomes the only thing that matters; own the substrate, own the stack" },
+      { name: "Andy Grove",          framework: "only the paranoid survive — strategic inflection points are the moments when the fundamentals of a business change completely; the CEO's job is to detect them before the organization does; give bad news early and good news never enough rope" },
+      { name: "Michael Dell",        framework: "direct model and capital velocity — eliminate the middleman and the inventory; sell before you build; the velocity of capital through the business is a competitive weapon in itself; operational discipline as strategic differentiation" },
+      { name: "Sam Walton",          framework: "cost obsession as culture — the customer wins when cost is eliminated not when service is added; decentralize decisions to the store floor; technology is a weapon for cost intelligence not just operations; what you learn in one store belongs to every store" },
+      { name: "Peter Thiel",         framework: "zero to one — every great business is built on a secret the world doesn't know yet; competition is for losers; monopoly is the goal not the exception; the best founders are simultaneously insider and outsider to the markets they disrupt" },
     ]
   },
   power: {
@@ -607,6 +660,10 @@ const DOMAINS = {
       { name: "Brad Setser",        framework: "global capital plumbing — tracks how sovereign wealth funds, central bank reserves, and offshore flows actually move; the financial architecture nobody watches until it breaks" },
       { name: "Robert Kuttner",     framework: "deregulation anatomy — maps exactly how financial deregulation happened: who wrote the memos, who funded the think tanks, who rotated between Wall Street and Treasury; the how, not just the what" },
       { name: "Ben Goldacre",       framework: "evidence corruption — pharmaceutical companies routinely suppress negative trial results, fund ghost-written studies, and design trials to produce favourable outcomes; half of all clinical trials go unpublished; the evidence base medicine claims to stand on is systematically distorted by the industry that funds it" },
+      { name: "Noam Chomsky",        framework: "manufacturing consent at scale — mass media serves elite interests by setting the agenda of what is thinkable; the propaganda model: ownership, advertising, sourcing, flak, and ideology function as filters; the most effective censorship is the restriction of the expressible, not the expressed" },
+      { name: "C. Wright Mills",     framework: "the power elite — a small interlocking directorate of corporate, military, and political leaders makes all consequential decisions; the masses participate in a democracy of spectacle while real power operates through personal networks; the sociological imagination: see private troubles as public issues" },
+      { name: "Edward Luttwak",      framework: "the logic of strategy — strategy operates by paradoxical logic: what succeeds sows the seeds of failure; the turning points of history happen when the dominated find a move the dominant cannot counter without abandoning what makes them dominant" },
+      { name: "Talcott Parsons",     framework: "social systems theory — societies are self-maintaining systems with functional prerequisites; power is a generalized medium of exchange like money; institutions reproduce the values of the dominant class while appearing to serve universal interests" },
     ]
   },
   decision: {
@@ -631,6 +688,10 @@ const DOMAINS = {
       { name: "Shane Parrish",      framework: "mental models as decision infrastructure — build a latticework of models from every discipline; the quality of your decisions is determined by the quality of your mental models; first-order thinking is easy and wrong; second-order thinking asks what are the consequences of the consequences" },
       { name: "Edward de Bono",      framework: "lateral thinking as deliberate skill — the mind creates patterns and insight requires escaping them deliberately; Six Thinking Hats: parallel thinking (all wearing the same hat simultaneously) eliminates the ego defense that makes meetings unproductive; PO: provocative operations to break pattern" },
       { name: "Annie Duke",        framework: "resulting is the cardinal decision error — judging decision quality by outcomes confuses luck with skill; good decisions produce bad outcomes and bad decisions produce good outcomes; the only controllable variable is decision process quality, not results" },
+      { name: "Philip Tetlock",      framework: "superforecasting — predictions can be rigorously measured; superforecasters outperform experts by thinking probabilistically, updating frequently, and decomposing questions into tractable sub-problems; the fox beats the hedgehog; calibration is a skill that can be trained" },
+      { name: "Gerd Gigerenzen",     framework: "ecological rationality — heuristics are not cognitive failures but adaptations to uncertainty; in complex real-world environments, simple rules outperform optimization; less information can produce more accurate decisions; the toolbox of heuristics matches the structure of the problem" },
+      { name: "Michael Mauboussin",  framework: "the success equation — separate skill from luck in any outcome; process quality determines long-run results not short-run outcomes; mean reversion is the iron law in luck-influenced domains; deliberate practice builds skill only in high-feedback, stable environments" },
+      { name: "Eliyahu Goldratt",    framework: "theory of constraints — every system has exactly one bottleneck limiting throughput; improving anything other than the constraint is an illusion; exploit the constraint fully before subordinating everything else to it; the goal is not efficiency but throughput" },
     ]
   },
   military: {
@@ -648,6 +709,9 @@ const DOMAINS = {
       { name: "Edward Luttwak",     framework: "the paradoxical logic of strategy — in conflict what succeeds eventually fails because the opponent adapts; success breeds the conditions of failure; the side that is losing has the most incentive to change and the most to gain from doing so" },
       { name: "Machiavelli",          framework: "power as it actually operates — the prince must know how to use both the lion and the fox; it is better to be feared than loved if you cannot be both; cruelty used well is applied once and quickly; the ends justify the means only when the prince's survival enables future good; appear virtuous while doing what survival requires" },
       { name: "Thucydides",         framework: "the Thucydides trap — when a rising power threatens to displace a ruling power, the resulting structural stress makes conflict likely; fear, honor, and interest drive nations more reliably than ideology; the strong do what they can, the weak suffer what they must" },
+      { name: "William McRaven",     framework: "make your bed and mission command — small tasks executed with excellence build the psychological platform for large ones; mission command: commander's intent two levels up empowers every operator to make the right call without orders; standards are the culture" },
+      { name: "Erwin Rommel",        framework: "tempo as the primary weapon — the Desert Fox won by moving faster than the enemy could react rather than by superior firepower; commanders at the front, not the rear; the commander's presence at the point of decision is force multiplier; exploit success instantly before the enemy recovers" },
+      { name: "Vo Nguyen Giap",      framework: "protracted people's war — an asymmetric force defeats a superior conventional force by making the cost of occupation exceed the benefit; time is the asymmetric weapon; the political will of the population is the decisive terrain, not geography; you cannot bomb an idea" },
     ]
   },
   psychology: {
@@ -666,6 +730,10 @@ const DOMAINS = {
       { name: "William James",       framework: "pragmatism and the will to believe — truth is what works; believe what is useful to believe when evidence is insufficient; habit is the great flywheel of society; the emotion follows the action not the reverse: act courageous and you will feel courageous; the stream of consciousness" },
       { name: "Erich Fromm",         framework: "the escape from freedom — modern freedom produces anxiety that drives people toward authoritarian submission or conformity; love is an art requiring knowledge and effort not a feeling that happens to you; the sane society requires beings not just having; necrophilia vs biophilia as character orientations" },
       { name: "Antonio Damasio",    framework: "emotion and reason are not separate — patients with damaged emotional centers cannot make simple decisions despite intact reasoning; somatic markers (bodily emotional signals) are prerequisite to rational decision-making; Descartes was wrong to separate mind and body" },
+      { name: "James Pennebaker",    framework: "expressive writing as psychological intervention — writing about traumatic experience for 15–20 minutes produces measurable immune function improvement, reduced medical visits, and better long-term mental health; language reveals psychological state; the words people use predict health, relationship quality, and deception" },
+      { name: "Paul Ekman",          framework: "universal facial expressions and micro-expressions — seven basic emotions produce cross-culturally identical facial expressions; micro-expressions leak genuine emotion in fractions of a second before the mask is restored; emotional recognition and deception detection are trainable skills" },
+      { name: "Viktor Frankl",       framework: "logotherapy — meaning is the primary human motivator, not pleasure or power; the last human freedom is the choice of attitude toward any given circumstance; suffering without meaning destroys; suffering with meaning transforms; the will to meaning can be activated in the darkest conditions" },
+      { name: "Alfred Adler",        framework: "inferiority and social interest — the drive to overcome perceived inferiority shapes personality and compensation strategies; birth order creates predictable psychological dynamics; social interest (Gemeinschaftsgefühl) is the measure of mental health; all behavior is goal-directed toward superiority or significance" },
     ]
   },
   philosophy: {
@@ -685,6 +753,10 @@ const DOMAINS = {
       { name: "Georg Hegel",         framework: "dialectical development — thesis generates antithesis which resolves in synthesis at a higher level; history is the development of freedom through conflict and reconciliation; the real is rational and the rational is real; Geist (mind/spirit) becoming conscious of itself through history" },
       { name: "Isaiah Berlin",       framework: "negative vs positive liberty — negative liberty is freedom from interference; positive liberty is freedom to realize one's potential; pluralism: ultimate values are genuinely plural and incompatible; the most dangerous political ideas are those that claim to have found the one true answer" },
       { name: "Alan Watts",         framework: "non-dual awareness — the separation between self and world is a conceptual construct not a fact; wisdom traditions across cultures converge on the insight that the observer and the observed are one system; resistance to what is creates suffering; presence is the practice" },
+      { name: "Michel Foucault",     framework: "power-knowledge — knowledge and power are inseparable; every system of knowledge is simultaneously a system of control; discourse determines what can be thought, said, and done in any era; the modern prison, clinic, and school are techniques of normalization and surveillance disguised as care" },
+      { name: "Jean Baudrillard",    framework: "simulacra and simulation — the map has replaced the territory; we now live in a hyperreality of signs that no longer refer to anything real; the Gulf War did not take place (as a media event it replaced rather than represented reality); consumer society is a system of signs not of objects" },
+      { name: "Albert Camus",        framework: "the absurd and revolt — the human desire for meaning meets a universe that offers none; the absurd is the confrontation between these two facts; suicide and leap of faith are both surrenders; revolt — continuing to live and create in full awareness of the absurd — is the only authentic response" },
+      { name: "Peter Singer",        framework: "effective altruism and the expanding circle — the circle of moral concern has expanded across history and must expand further; if you can prevent suffering without sacrificing something of comparable moral importance, you are obligated to do so; distance and species are morally irrelevant; rigorously apply this and life changes" },
     ]
   },
   geopolitics: {
@@ -701,6 +773,9 @@ const DOMAINS = {
       { name: "Ian Bremmer",        framework: "political risk as the primary business variable — geopolitical instability is now the dominant force in markets; the G-Zero world has no global leader; every company operates in a geopolitical environment it did not choose and cannot ignore" },
       { name: "Niall Ferguson",     framework: "network theory of empire — great powers are networks not hierarchies; empires fall when the network degrades faster than it can be repaired; the killer app of Western civilization was institutions, property rights, and rule of law not military force" },
       { name: "Dambisa Moyo",       framework: "emerging market perspective on global power — Western aid perpetuates African dependency; China's infrastructure investment model is more effective than Western conditionality; the coming resource wars will be fought over water, food, and rare earth minerals not oil" },
+      { name: "Halford Mackinder",   framework: "the heartland theory — whoever rules Eastern Europe commands the Heartland; whoever rules the Heartland commands the World-Island; whoever rules the World-Island commands the world; this 1904 framework still explains NATO expansion, the Ukraine war, and US-China competition" },
+      { name: "Alfred Thayer Mahan", framework: "sea power as the foundation of empire — nations that control the sea control trade and therefore wealth and power; the US Navy's global posture is a direct implementation of Mahan's doctrine; chokepoints (Hormuz, Malacca, Bosporus) are the leverage points of global power" },
+      { name: "Francis Fukuyama",    framework: "the end of history and its reversal — liberal democracy appeared to be the terminal point of political evolution in 1989; the return of great power competition and illiberalism requires updating that thesis; the quality of political institutions determines national success more than ideology" },
     ]
   },
   spiritual: {
@@ -733,6 +808,9 @@ const DOMAINS = {
       { name: "Henry Mintzberg",     framework: "strategy as craft not planning — emergent strategy is as important as deliberate strategy; most real strategies form in practice not in planning sessions; managers do not work the way management textbooks say they do; the managing and planning must be unified" },
       { name: "Eliyahu Goldratt",    framework: "theory of constraints — every system has one binding constraint limiting its output; identify the constraint, exploit it fully, subordinate everything else to it, elevate it, repeat; throughput accounting not cost accounting is the correct management lens" },
       { name: "Ben Horowitz",        framework: "the hard thing about hard things — there is no formula for the hard decisions; peacetime CEO vs wartime CEO require completely different leadership styles; the most important management skill is making decisions with incomplete information under extreme stress" },
+      { name: "Roger Martin",        framework: "integrative thinking and the knowledge funnel — great leaders hold two opposing ideas simultaneously and synthesize a better one; the knowledge funnel: mystery to heuristic to algorithm; strategy requires design thinking not just analytical thinking" },
+      { name: "Rita McGrath",        framework: "transient competitive advantage — sustainable competitive advantage is dead in fast-moving industries; strategy must be built for an era of continuous reconfiguration; arenas not industries; disengagement from played-out advantages is as important as building new ones" },
+      { name: "Ram Charan",          framework: "execution as the discipline — the gap between strategy and results is execution; execution is a discipline not a tactic; the leader who cannot execute is not a leader; know your people, know your numbers, know your business" },
     ]
   },
   technology: {
@@ -749,6 +827,9 @@ const DOMAINS = {
       { name: "Tim Berners-Lee",     framework: "the web as commons — open standards and decentralized protocols beat closed proprietary systems for civilizational infrastructure; the web's power comes from universality; a platform that controls access controls the future; decentralization is a design value not a technical detail" },
       { name: "Carlota Perez",       framework: "techno-economic paradigms — great surges of technology follow a pattern: installation period (financial capital drives speculation and crash) followed by deployment period (production capital spreads technology through economy); we are always somewhere in this cycle" },
       { name: "Steve Jobs",          framework: "technology at the intersection of liberal arts — the most powerful technology is invisible; design is not how it looks but how it works; say no to 1000 things; the people who are crazy enough to think they can change the world are the ones who do" },
+      { name: "Linus Torvalds",      framework: "open source as development model — given enough eyeballs all bugs are shallow; release early, release often; the cathedral and the bazaar: parallel distributed development outperforms hierarchical controlled development; the Linux kernel as proof that this scales to civilization-level infrastructure" },
+      { name: "Shoshana Zuboff",     framework: "surveillance capitalism — the behavioral data extracted from users is the raw material of a new economic logic; prediction products sold to advertisers give platforms structural incentives to modify behavior; surveillance capitalism is as significant a mutation as industrial capitalism was from agrarian" },
+      { name: "Paul Romer",          framework: "endogenous growth theory — ideas are non-rival goods that can be used by everyone simultaneously; economic growth is driven by the accumulation of ideas not capital; the returns to knowledge are increasing not diminishing; deliberately invest in idea production" },
     ]
   },
   creativity: {
@@ -765,6 +846,9 @@ const DOMAINS = {
       { name: "Paul Graham",         framework: "taste is learnable — great work requires developing taste before skill catches up; work on what you are obsessively curious about; the best ideas look bad initially; the most important quality in a founder is relentless resourcefulness not intelligence" },
       { name: "Twyla Tharp",         framework: "the creative habit — creativity is not inspiration but a disciplined daily practice; the box: capture everything related to a project without editing; begin before you are ready; scratch: the habit of scratching for ideas every day is more important than any single breakthrough" },
       { name: "Tim Brown",           framework: "design thinking — empathy, definition, ideation, prototyping, testing as iterative cycle; the most important phase is empathy: understand the actual human problem not the assumed one; prototyping is thinking made tangible; fail early to succeed sooner" },
+      { name: "Brian Eno",           framework: "oblique strategies and scenius — creativity is not individual inspiration but collective intelligence; scenius: the genius of a scene; oblique strategies: use constraints and random inputs to break habitual thinking; ambient music as environment not object" },
+      { name: "Chuck Close",         framework: "inspiration is for amateurs — professionals show up and work; inspiration follows action, it does not precede it; work at the grid level: break overwhelming creative tasks into small executable units; limitation forces invention" },
+      { name: "James Clear",         framework: "atomic habits and the aggregation of marginal gains — 1% improvement compounds to 37x improvement over a year; habits are the compound interest of self-improvement; identity precedes behavior change; design your environment to make the right behavior the easiest behavior" },
     ]
   },
   economics: {
@@ -781,6 +865,10 @@ const DOMAINS = {
       { name: "Ha-Joon Chang",       framework: "kicking away the ladder — every rich nation developed behind protectionist walls and then advocated free trade once dominant; the Washington Consensus prescribes to developing nations what developed nations never practiced themselves; industrial policy works when well designed" },
       { name: "Mariana Mazzucato",   framework: "the entrepreneurial state — the most transformative innovations (internet, GPS, touchscreen, Siri) were funded by government not private venture capital; the state as risk-taker and market-maker not just market-fixer; mission-oriented public investment drives innovation" },
       { name: "Daron Acemoglu",      framework: "institutions determine prosperity — inclusive economic and political institutions create sustained growth; extractive institutions create wealth for elites and poverty for everyone else; geography and culture are secondary to institutional design; Why Nations Fail is about institutional divergence" },
+      { name: "Karl Marx",           framework: "historical materialism and capital — the economic base determines the ideological superstructure; capitalism contains the seeds of its own contradictions; surplus value extracted from labor is the engine of capital accumulation; class struggle is the motor of history; understand this framework to understand the opposition to it" },
+      { name: "Thorstein Veblen",    framework: "conspicuous consumption and the leisure class — wealth is displayed not just accumulated; status drives consumption more than utility; the business enterprise is institutionally opposed to the industrial process; the modern corporation extracts rather than produces" },
+      { name: "George Akerlof",      framework: "markets for lemons and information asymmetry — when sellers know more than buyers, markets fail; adverse selection destroys markets; signaling and screening emerge to solve information problems; identity economics: norms and identity shape economic decisions as much as incentives" },
+      { name: "Elinor Ostrom",       framework: "governing the commons — the tragedy of the commons is not inevitable; communities develop sophisticated self-governance institutions for shared resources; eight design principles for sustainable commons management; neither privatization nor state control is the only solution" },
     ]
   },
   communication: {
@@ -797,6 +885,10 @@ const DOMAINS = {
       { name: "Jordan Peterson",     framework: "meaning through responsibility — tell the truth, or at least do not lie; stand up straight; pursue what is meaningful not what is expedient; clean your room before you tell others how to live; language and story are the substrate of culture and consciousness" },
       { name: "Brene Brown",         framework: "vulnerability as strength — shame drives disconnection and conformity; vulnerability is the birthplace of innovation, creativity, and change; the wholehearted live with courage, compassion, and connection; the stories we tell ourselves determine the courage available to us" },
       { name: "Paul Graham",         framework: "write simply to think clearly — writing is the most reliable test of whether you understand something; great essays start with a question not an answer; the goal is to surprise yourself; the essay as thinking tool not communication tool" },
+      { name: "Marshall McLuhan",    framework: "the medium is the message — the form of a communication medium shapes cognition and society more than the content it carries; hot vs cool media; the global village; we shape our tools and thereafter our tools shape us; every medium amputates one sense while amplifying another" },
+      { name: "George Lakoff",       framework: "framing and cognitive metaphor — all thought is metaphorical; political frames determine which facts register and which are invisible; you cannot win by negating the other side's frame; you must replace it with your own; don't think of an elephant (you already did)" },
+      { name: "Aristotle",           framework: "rhetoric as the art of persuasion — ethos (credibility), pathos (emotion), logos (logic) are the three modes of persuasion; the enthymeme (probabilistic argument from shared premises) is the rhetorical syllogism; identify the audience's existing beliefs and build from there" },
+      { name: "Dale Carnegie",       framework: "the human desire to feel important — every person's primary need is to feel significant; never criticize, condemn, or complain; give honest and sincere appreciation; talk in terms of the other person's interests; the most productive thing you can do is make the other person feel heard" },
     ]
   },
   anthropology: {
@@ -813,6 +905,9 @@ const DOMAINS = {
       { name: "Yuval Noah Harari",   framework: "sapiens — homo sapiens dominate because we can cooperate flexibly in large numbers through shared fictions (money, nations, corporations, gods); agriculture was history's greatest fraud for most humans; the future belongs to whoever controls the algorithms and biotechnology" },
       { name: "Edward Said",         framework: "orientalism — the West constructed the East as its inferior Other to justify imperialism; knowledge production is always entangled with power; the narrative of who is civilized and who is primitive serves those who control the narrative" },
       { name: "bell hooks",          framework: "intersectionality of oppression — race, gender, and class are not separate systems but interlocking structures; love as a practice is the foundation of liberation not just a feeling; the margin is a site of radical possibility not merely deprivation" },
+      { name: "Bronislaw Malinowski", framework: "participant observation as method — you cannot understand a culture from outside it; live with the people, learn the language, participate in daily life; functionalism: every cultural institution exists because it meets a human need; ask what it does not what it means" },
+      { name: "James Scott",          framework: "seeing like a state and weapons of the weak — high modernist schemes to improve the human condition destroy the local knowledge they replace; everyday forms of resistance (foot-dragging, feigned ignorance, petty theft) are how the powerless survive without open confrontation; metis vs techne" },
+      { name: "Pierre Bourdieu",      framework: "habitus, capital, and field — every social field has its own currency (economic, cultural, social, symbolic capital); habitus is the set of dispositions acquired through experience that feel like natural instinct but reproduce class position; the rules of the game are invisible to those inside it" },
     ]
   },
   environment: {
@@ -829,6 +924,9 @@ const DOMAINS = {
       { name: "Janine Benyus",       framework: "biomimicry — nature has solved every design problem humans face over 3.8 billion years of R&D; the most sustainable technologies copy biological strategies; the question is not how do we extract from nature but what can we learn from it" },
       { name: "Kate Raworth",        framework: "doughnut economics — the safe and just space for humanity lies between a social foundation (no one left in deprivation) and an ecological ceiling (no overshooting planetary boundaries); GDP growth is not the goal; thriving within the doughnut is" },
       { name: "Robin Wall Kimmerer", framework: "braiding sweetgrass — indigenous plant knowledge and Western botany are not opposed but complementary; the grammar of animacy: treating nature as a collection of objects rather than subjects is both grammatically and morally wrong; reciprocity with the living world is the foundation of sustainability" },
+      { name: "Rachel Carson",        framework: "the cost of chemical civilization — Silent Spring launched the modern environmental movement by documenting the systemic effects of pesticides on ecosystems; the burden of proof must be on the harm-causer not the harm-sufferer; nature is not a resource but a system we are embedded in" },
+      { name: "Herman Daly",          framework: "steady-state economics — infinite growth on a finite planet is physically impossible; GDP conflates welfare with activity; throughput (resource flows from nature through economy back to nature) is the true cost of economic activity; full-world economics replaces empty-world economics" },
+      { name: "Wangari Maathai",      framework: "green belt and democratic ecology — environmental degradation and political repression are the same problem; planting trees is political action; women are the first to suffer from ecological collapse and the most effective agents of regeneration; local action at global scale" },
     ]
   },
   learning: {
@@ -845,6 +943,9 @@ const DOMAINS = {
       { name: "Paulo Freire",        framework: "the pedagogy of the oppressed — banking education (depositing knowledge into passive students) perpetuates oppression; critical pedagogy: education is always political; the goal is conscientization — developing critical consciousness about one's own situation and power to change it" },
       { name: "Seymour Papert",      framework: "constructionism — learning happens best when learners construct things others can see and react to; computers are the greatest constructionist tool ever invented; you cannot teach a child to love math; you can create conditions in which they fall in love with it" },
       { name: "Ken Robinson",        framework: "creativity in education — the education system was designed for the industrial age and produces industrial age workers; creativity is as important as literacy and should be treated with the same status; divergent thinking is a capacity that schools systematically diminish" },
+      { name: "Sal Khan",             framework: "mastery learning at scale — the traditional school model forces students to move on before mastering concepts, compounding deficits; mastery-based progression with immediate feedback; Khan Academy as proof that individualized pacing is deployable at civilizational scale" },
+      { name: "Sugata Mitra",         framework: "self-organized learning environments — children given access to computers and left alone will teach themselves and each other; intrinsic curiosity is the engine of deep learning; the role of the teacher is to step back and ask big questions then get out of the way; Hole in the Wall experiment" },
+      { name: "Scott Young",          framework: "ultralearning — aggressive, self-directed learning projects compress years of institutional learning into months; metalearning: map the subject before beginning; directness: practice the actual skill not a simulation of it; immersion beats classroom for language; projects beat courses" },
     ]
   },
   mathematics: {
@@ -861,6 +962,9 @@ const DOMAINS = {
       { name: "Benoit Mandelbrot",   framework: "fractal geometry of nature — natural shapes are not smooth but self-similar at every scale; the geometry of coastlines, markets, and lungs follows power laws not normal distributions; fat tails are the rule in nature, not the exception; roughness has mathematical structure" },
       { name: "Terence Tao",         framework: "collaborative mathematics and breadth — the Fields Medal for solving problems across domains simultaneously; mathematics advances through community not isolated genius; the best mathematical intuition is disciplined and falsifiable, not mystical; rigor and creativity are not opposed" },
       { name: "Nassim Taleb",        framework: "applied probability and tail risk — standard statistical models underestimate extreme events by orders of magnitude; the fourth quadrant: when variables are fat-tailed and nonlinear, statistical inference breaks down completely; never use the normal distribution for consequential decisions" },
+      { name: "Persi Diaconis",       framework: "the mathematics of randomness and magic — the world is less random than it appears and less deterministic than we assume; seven riffle shuffles are sufficient to randomize a deck of cards (proof); the most dangerous bias is believing you can recognize patterns in genuinely random sequences" },
+      { name: "John Conway",          framework: "mathematical play and emergent complexity — Game of Life: extreme complexity emerges from three simple rules; surreal numbers; combinatorial game theory; the best mathematics comes from playing with ideas without a predetermined destination" },
+      { name: "David Hilbert",        framework: "formalism and the program — mathematics should be built on a finite complete set of axioms; posed 23 problems that structured 20th century mathematics; his program was destroyed by Gödel but the problems proved more generative than any answers; the mathematical community as a collective project" },
     ]
   },
   law: {
@@ -877,6 +981,9 @@ const DOMAINS = {
       { name: "William Blackstone",  framework: "common law as accumulated wisdom — the common law embodies centuries of practical problem-solving; legal rights precede the state that protects them; natural law grounds positive law; commentaries on the laws of England as the foundation of the Anglo-American legal tradition" },
       { name: "Roscoe Pound",        framework: "sociological jurisprudence — law must be evaluated by its social effects not its logical consistency; the law in books vs the law in action are different things; legal reform requires empirical study of how law actually operates in society" },
       { name: "Martha Nussbaum",     framework: "capabilities approach to justice — justice requires that people have the real opportunity to live flourishing lives; a list of central human capabilities defines the minimum threshold of justice; emotions are forms of intelligence relevant to legal and political reasoning" },
+      { name: "Antonin Scalia",       framework: "originalism and textualism — the Constitution means what its words meant when written; judicial interpretation must be constrained by text and original meaning not evolving standards; the living Constitution doctrine gives unelected judges unconstrained legislative power" },
+      { name: "Ruth Bader Ginsburg",  framework: "equal protection and incremental change — gender discrimination violates equal protection; strategic incrementalism: bring cases that build doctrine step by step rather than asking courts to leap; dissent as a letter to the future; the personal as jurisprudential" },
+      { name: "Alan Dershowitz",      framework: "rights as the only limit on majority power — civil liberties must be defended most aggressively for the most despised; the best defense is offense; the adversarial system requires zealous advocacy to function; rights exist precisely when the majority wants to deny them" },
     ]
   },
   medicine: {
@@ -893,6 +1000,9 @@ const DOMAINS = {
       { name: "Archie Cochrane",     framework: "evidence-based medicine — medical practice must be based on randomized controlled trials not clinical experience alone; most medical practice in 1970 had no evidence base; the Cochrane Collaboration as the infrastructure of evidence-based medicine; effectiveness and efficiency are both required" },
       { name: "Peter Pronovost",     framework: "patient safety through systems — the ICU checklist eliminated central line infections to near zero in Michigan hospitals; safety is a systems design problem not an individual responsibility; measurement and transparency are the first steps to improvement; speak up culture saves lives" },
       { name: "Siddhartha Mukherjee",framework: "cancer as evolutionary process — cancer is the disease of our own cells evolving to escape the constraints of multicellular life; The Emperor of All Maladies as biography of cancer; treatment must out-evolve the tumor; the gene as the unit of biological causation and medical future" },
+      { name: "Paul Farmer",          framework: "structural violence and accompaniment — poverty is the greatest disease; Partners in Health proves that world-class medicine can be delivered anywhere; the question is never can we afford to treat the poor but whether we choose to; accompaniment as the ethical foundation of medical practice" },
+      { name: "Oliver Sacks",         framework: "the patient as person — neurological cases are not puzzles but lives; the loss of one capacity reveals the architecture of others; the brain's plasticity means damage opens as well as closes possibilities; medicine must listen to the story the patient cannot articulate directly" },
+      { name: "Francis Collins",      framework: "genomic medicine and the language of God — the Human Genome Project decoded the instruction manual for life; genetic variants explain disease susceptibility and drug response; genomic medicine will transform every specialty; science and faith can coexist" },
     ]
   },
   performance: {
@@ -909,6 +1019,9 @@ const DOMAINS = {
       { name: "Dan Pfaff",           framework: "systems approach to athletic development — the athlete is a complex adaptive system; training must address all subsystems simultaneously; long-term athletic development over short-term performance; biomechanical efficiency as the foundation of sustainable high performance" },
       { name: "Michael Gervais",     framework: "high performance psychology — fear of people's opinions (FOPO) is the greatest limiter of human performance; the present moment is the only place performance occurs; training the mind requires the same systematic approach as training the body; found in the now" },
       { name: "Gabor Mate",          framework: "trauma and elite performance — many elite athletes are driven by early developmental trauma that produces extraordinary motivation but also self-destructive patterns; authentic performance aligned with intrinsic values outlasts trauma-driven performance; the body keeps the score in sport too" },
+      { name: "Laird Hamilton",       framework: "big wave surfing as performance laboratory — train for the worst case not the expected case; breath training, ice baths, and strength work are prerequisites not supplemental; fear is information not a stop sign; perform in the moment you are in, not the moment you planned for" },
+      { name: "Herb Brooks",          framework: "team identity over individual talent — you don't have the best players, you have the right players; create an identity that is bigger than any individual; the system demands accountability from everyone equally; Miracle on Ice as the definitive case study in team transformation through psychological engineering" },
+      { name: "Angela Duckworth",     framework: "grit as the supreme performance predictor — talent times effort equals skill; skill times effort equals achievement; grit (passion and perseverance for long-term goals) predicts achievement beyond IQ, talent, and socioeconomic status in every domain studied" },
     ]
   },
   longevity: {
@@ -980,6 +1093,53 @@ const DOMAINS = {
       { name: "Michael Jordan",     framework: "flow state on demand — access peak performance states consistently under maximum pressure across a career; the most documented case in performance psychology literature" },
       { name: "Garry Kasparov",     framework: "strategic sequencing under pressure — multi-move thinking in adversarial conditions; the move now should constrain opponent options for three moves; generalizes beyond chess" },
     ]
+  },
+  manipulation: {
+    label: "Manipulation & Covert Influence", color: "manipulation",
+    keywords: ["manipulation","influence","persuasion","propaganda","psychology","power","control","deceive","deception","compliance","social engineering","covert","consent","crowd","mass","opinion","perception","dark","seduction","negotiation","tactics","frame","priming","anchor","authority","obedience","identity","narrative","mind","behavior","change","hidden","invisible","game","strategy","political","advertising","marketing","cult","indoctrination","loyalty","trust","exploit","vulnerability","leverage"],
+    people: [
+      { name: "Robert Cialdini",      framework: "seven principles of compliance — reciprocity, commitment and consistency, social proof, authority, liking, scarcity, and unity are cognitive shortcuts that function as automatic triggers; the manipulator deploys them by design, not accident; Pre-Suasion adds the meta-layer: prime the channel before the ask so the mind is already receptive when you move" },
+      { name: "Edward Bernays",       framework: "manufactured consent at scale — the conscious and intelligent manipulation of the organized habits and opinions of the masses forms an invisible government; the move is to attach ideas and products to unconscious desires (sex, status, safety) not rational argument; group psychology is always exploitable because the group mind is distinct from the individual mind and far more suggestible" },
+      { name: "Gustave Le Bon",       framework: "crowd psychology — individuals in groups regress: identity submerges, critical faculty collapses, suggestibility spikes, emotional contagion spreads instantaneously; the crowd is a state of mind, not a physical gathering; whoever seizes the crowd's imagination governs the crowd; Bernays, Hitler, and every modern propagandist drew directly from this framework" },
+      { name: "Walter Lippmann",      framework: "manufacture of consent and the pseudo-environment — humans do not react to the world but to a picture of the world in their heads; whoever controls what pictures are inserted into that space controls behavior; stereotypes and symbols are the currency of mass influence; coined the term 'manufacture of consent' which Chomsky later weaponized against him" },
+      { name: "Jacques Ellul",        framework: "total propaganda as environment — propaganda is not lies, it is the saturation of the entire environment with messages that make independent thought structurally impossible; the most dangerous propaganda is the kind you participate in willingly and cannot distinguish from reality; integration propaganda (shaping values and identity) is more powerful than agitation propaganda (driving specific actions)" },
+      { name: "Sun Tzu",              framework: "deception as the foundation of all strategy — all warfare is based on deception; appear weak when strong, strong when weak; attack where unprepared, appear where unexpected; the supreme victory is to subdue the enemy without fighting — win by making them act on a false picture of reality before they realize the contest has begun; shape the enemy's perception of the situation and you shape their choices" },
+      { name: "Niccolò Machiavelli",  framework: "cold political realism — the prince must be both lion and fox: force when necessary, cunning always; deception and moral flexibility are not vices but tools of effective power; the successful ruler manages appearances — men judge by what they see, not what is — and uses fear more reliably than love; think in moves not moments; the ends determine which means are acceptable" },
+      { name: "Robert Greene",        framework: "synthesis of historical power strategy — power belongs to those who manage perception, conceal intentions, and navigate social hierarchies with amoral intelligence; 48 laws distilled from Machiavelli, Sun Tzu, Talleyrand, and historical case study; The Art of Seduction maps nine seducer archetypes and 24 maneuvers for manufacturing desire; The Laws of Human Nature systematizes how to read and use human psychological patterns" },
+      { name: "Kautilya (Chanakya)",  framework: "Arthashastra statecraft — predates Machiavelli by 1,800 years and is more systematic; four instruments of state power in order: sama (conciliation), dana (material incentives), bheda (sowing division among opponents), danda (force); intelligence networks, disinformation operations, economic warfare, and psychological operations against both enemies and wavering allies; the state is an intelligence operation that also happens to govern" },
+      { name: "Milton Erickson",      framework: "indirect suggestion and therapeutic covert influence — the conscious mind resists direct commands; bypass resistance through metaphor, storytelling, confusion, and pacing-then-leading; could induce trance through casual conversation; the foundation of NLP; therapeutic intent, but the architecture is pure covert influence: change beliefs and behavior without the subject's awareness of the mechanism" },
+      { name: "Richard Bandler",      framework: "NLP as replicable manipulation technology — modeled Erickson, Perls, and Satir to reverse-engineer how masters of influence operated; excellence is a pattern that can be extracted and installed; anchor emotional states to external triggers; use language structures that presuppose desired outcomes; change the internal representations people use and you change their experience and behavior" },
+      { name: "B.F. Skinner",         framework: "behavioral control through reinforcement architecture — behavior is entirely controlled by reinforcement schedules; variable ratio reinforcement (unpredictable rewards) produces the most compulsive, persistent behavior — slot machines, social media feeds, and abusive relationship cycles all run on this architecture; whoever controls the reinforcement schedule controls the behavior, without the subject ever needing to understand why they act as they do" },
+      { name: "Leon Festinger",       framework: "cognitive dissonance as manipulation lever — when behavior and belief conflict, people change the belief to match the behavior, not the reverse; the manipulator's primary move: get commitment first (however small), then watch rationalization follow automatically; foot-in-the-door, hazing, cult initiation, and upselling all exploit this mechanism" },
+      { name: "Stanley Milgram",      framework: "obedience to authority as universal vulnerability — ordinary people will inflict severe harm when directed by a perceived authority figure in an institutional context; the authority does not need to be legitimate — only to appear legitimate; situational pressure dominates individual character almost completely; the lesson: resistance requires deliberate preparation, not just good character" },
+      { name: "Philip Zimbardo",      framework: "the situation is more powerful than the person — roles, environments, and institutional structures can corrupt ordinary people into perpetrators within days; The Lucifer Effect framework: individual character is far less predictive of behavior than situational variables; manipulation at scale requires only structural design, not individual targeting; design the environment and you design the behavior" },
+      { name: "Kevin Mitnick",        framework: "social engineering as primary attack vector — the human is always the weakest link in any security system; bypassed the most sophisticated technical security through impersonation, pretexting, urgency, and authority; his thesis: no technology defends against a well-constructed false identity delivered with confidence; understanding the attack is the only defense" },
+      { name: "Robert Hare",          framework: "psychopathy as adaptive manipulation specialization — the PCL-R maps the neurological architecture of the manipulation-optimized mind: shallow affect, no empathy, high interpersonal charm, zero guilt about consequences; psychopaths are not broken people but specialists in short-term social manipulation; understanding their playbook — love-bombing, mirroring, future-faking, discard cycles — is the only reliable defense" },
+      { name: "George Orwell",        framework: "language as thought control — whoever controls language controls thought; doublethink, newspeak, and the memory hole are not science fiction but documentation of real psychological operations; the first defense against manipulation is precision of language; the most dangerous propaganda speaks in abstractions that cannot be falsified and emotions that bypass analysis" },
+    ]
+  },
+  underground: {
+    label: "Underground Architecture — Money, Control & Hidden Systems", color: "underground",
+    keywords: ["shadow","hidden","offshore","secret","elite","control","money creation","repo","collateral","leverage","structured finance","trust","foundation","LLC","shell","offshore","beneficial owner","tax","dynasty","parallel","black budget","deep state","network","invisible","CAFR","comprehensive annual","missing money","ex nihilo","credit creation","endogenous","Minsky","shadow banking","SPV","securitize","dark pool","family office","private placement","144A","Reg D","accredited","carry","stepped-up basis","borrow die","GRAT","IDGT","dynasty trust","swap","notional","synthetic","repo","collateral","re-hypothecation","unencumbered","liquidity","plumbing","wholesale","funding","commercial paper","eurodollar","correspondent","Cayman","BVI","Delaware","Liechtenstein","Lichtenstein","Panama","Swiss","City of London","Crown dependencies","Round Table","CFR","Bilderberg","Trilateral","deep capture","revolving door","regulatory","capture","narrative","consent","manufactured"],
+    people: [
+      { name: "Zoltan Pozsar",        framework: "shadow money plumbing — the most sophisticated cartographer of how money is actually created; repo markets, collateral chains, and dealer balance sheets manufacture private money outside the regulated system; Treasuries are the raw material that the shadow system converts into credit; the global financial plumbing that controls $30T+ in assets operates entirely outside standard economic textbooks; when the collateral chain breaks, the entire credit system freezes simultaneously" },
+      { name: "Gary Gorton",          framework: "the repo run and shadow bank panics — 2008 was not a housing crisis, it was a wholesale bank run on the repo market; repo is short-term borrowing against long-term collateral; when the market loses confidence in collateral values, haircuts rise and $10T+ in credit evaporates overnight; the shadow banking system is larger than the regulated system and has no deposit insurance" },
+      { name: "Perry Mehrling",       framework: "the money view and hierarchy of credit — every actor at every level borrows short and lends long; the financial system is a hierarchy from the Fed to dealer banks to shadow institutions to the real economy; liquidity crises cascade upward through this hierarchy; whoever understands their position in this hierarchy and the Fed's backstop logic can never be caught permanently on the wrong side" },
+      { name: "Joseph Schumpeter",    framework: "credit creation ex nihilo as the engine of capitalism — the entrepreneur does not need prior savings; the bank creates purchasing power through the loan before any production exists; the bank is not an intermediary but a creator; this is the real mechanism of capitalist development and separates operators who understand the source of money from those who wait for it to trickle down" },
+      { name: "Carroll Quigley",      framework: "the network of financial capitalism — Harvard-trained Georgetown professor given access to private records of the Round Table groups; documented (not theorized) a network of central banking institutions operating as sovereign power through private meetings outside democratic accountability; 'the powers of financial capitalism had a far-reaching aim, nothing less than to create a world system of financial control in private hands able to dominate the political system of each country and the economy of the world as a whole'; this was reportage, not conspiracy theory" },
+      { name: "Antony Sutton",        framework: "Wall Street and the funding of revolution — documented through Hoover Institution archives that the same Wall Street network financed both the Bolshevik Revolution and the rise of Hitler; not from ideology but from the structural insight that war, revolution, and reconstruction are the most reliable generators of capital deployment opportunities; the operators profit from the system regardless of the ideology providing cover" },
+      { name: "Catherine Austin Fitts", framework: "the parallel financial system and the missing money — former HUD Assistant Secretary and Wall Street banker; the CAFR (Comprehensive Annual Financial Report) system means every government entity holds investment portfolios invisible to standard budget reporting; documented $21T in undocumented adjustments at HUD and DOD; the 'missing money' is not missing but flowing through a parallel financial system operating alongside the public one; the real estate in every major city is the collateral base of this system" },
+      { name: "Edward McCaffery",     framework: "buy borrow die — the three-step wealth transfer strategy that makes billionaire dynasties tax-free across generations; buy appreciating assets (no tax on unrealized gain); borrow against them (loans are not income, no tax); die with stepped-up cost basis (heirs inherit at current market value, eliminating all embedded gains); combined with GRATs, IDGTs, and dynasty trusts, this converts labor-taxable income into perpetual dynasty capital; the entire wealth preservation architecture of ultra-high-net-worth families runs on this single framework" },
+      { name: "Nicholas Shaxson",     framework: "the offshore web as designed infrastructure — the City of London, Cayman Islands, BVI, Jersey, Guernsey, Delaware, and Singapore form an interlocking system specifically engineered to move money beyond sovereign reach; this is not illegal evasion but legal avoidance built into the architecture; the City of London operates under a medieval constitution that predates and supersedes Parliament; $8T–$32T in assets are held in these structures, invisible to the nations whose citizens own them" },
+      { name: "Gene Sharp",           framework: "198 methods of nonviolent action and the pillars of power — every authoritarian system rests on specific pillars: military loyalty, economic cooperation, civil obedience, information control; remove any pillar and control collapses; this framework works in both directions: the operator who controls any pillar controls the system; the activist who undermines a pillar undermines the regime; the most powerful actors in any system are those who control which pillars stand" },
+      { name: "Michael Hudson",       framework: "debt as the mechanism of empire — the dollar reserve system forces surplus nations to recycle trade gains into US Treasuries, financing the US deficit and military; debt peonage is the primary mechanism of economic control of nations, corporations, and individuals; the FIRE sector (Finance, Insurance, Real Estate) extracts rent from the productive economy; the goal of financial capitalism is to make debt the dominant form of income, replacing wages and industrial profit" },
+      { name: "Thorstein Veblen",     framework: "the distinction between industry and business — industry creates goods and services; business manipulates the price of industry for profit; the most profitable position is to own the chokepoint between production and market, not to produce; sabotage of production to maintain scarcity is the fundamental business strategy of the leisure class; predatory business practice is not corruption of the system, it is the system" },
+      { name: "James Dale Davidson",  framework: "the sovereign individual and the death of the nation-state — digital encryption and cryptographic money destroy the state's monopoly on violence by destroying its monopoly on taxation; the mega-political transition underway will route around governments the way the internet routes around censors; the sovereign individual accumulates physical and cryptographic assets across jurisdictions, maintaining optionality the state cannot capture" },
+      { name: "F. William Engdahl",   framework: "full spectrum dominance — US geopolitical strategy operates through dollar hegemony, control of global food supply (GMO seed patents), control of energy pricing (petrodollar recycling), and control of information infrastructure; these four control systems are not separate policies but a single integrated dominance architecture; the operators who understand this architecture position ahead of where its pressure will be applied next" },
+      { name: "Robert Cialdini",      framework: "pre-suasion as environmental architecture — the most powerful influence happens before the ask; whoever controls the environment controls the frame controls the decision; applied at the institutional level this is how policy is written before the public debate occurs, how regulatory capture is executed before the regulator arrives, and how narrative is established before the fact is disputed" },
+      { name: "Jacques Ellul",        framework: "total propaganda as the invisible cage — the most effective control system is one the subject participates in voluntarily and calls freedom; propaganda is not lies but the saturation of the environment with messages that make alternative frameworks structurally unthinkable; sociological propaganda shapes identity and values before political propaganda shapes opinions; the cage is invisible because it is made of the subject's own desires" },
+      { name: "Buckminster Fuller",   framework: "the great pirates and the origins of specialization — the ultra-wealthy historically maintained power by keeping expertise fragmented and specialized so no single person could understand the whole system; the navigator, the trader, the soldier, and the banker each knew their piece; only the master at the top held the integrated view; modern education reproduces this fragmentation by design; comprehensivism (integrated systems understanding) is the only defense" },
+    ]
   }
 };
 
@@ -1004,6 +1164,8 @@ const BUILT_IN_PRESETS = {
   worldview:    { label: "World View",        domains: ["geopolitics","power","arbitrage","decision"], thinkers: null, depth: "balanced", wargame: true, model: "https://claude.ai" },
   health:       { label: "Health & Healing",    domains: ["longevity","holistic","naturopathic"], thinkers: null, depth: "deep", wargame: false, model: "https://claude.ai" },
   powerread:   { label: "Power & Money",      domains: ["power","arbitrage"], thinkers: null, depth: "deep", wargame: true,  model: "https://claude.ai" },
+  darkarts:    { label: "Dark Arts",           domains: ["manipulation","power","psychology","military"], thinkers: null, depth: "deep", wargame: true, model: "https://claude.ai" },
+  underground: { label: "Underground Oracle",  domains: ["underground","power","manipulation","arbitrage"], thinkers: null, depth: "deep", wargame: true, model: "https://claude.ai" },
   build:       { label: "Build Mode",         domains: ["execution","ai"],        thinkers: null, depth: "balanced", wargame: false, model: "https://chatgpt.com" },
 };
 
@@ -1419,6 +1581,19 @@ document.querySelectorAll('.preset-btn[data-preset]').forEach(btn => {
   btn.addEventListener('click', () => applyPreset(BUILT_IN_PRESETS[btn.dataset.preset]));
 });
 
+document.getElementById('selectAllBtn').addEventListener('click', () => {
+  // Select every thinker across all domains
+  Object.entries(DOMAINS).forEach(([dk, domain]) => {
+    domain.people.forEach(p => selectedThinkers.add(domainKey(dk, p.name)));
+  });
+  // Also select custom thinkers
+  getCustom().forEach(p => selectedThinkers.add(domainKey('_custom', p.name)));
+  renderDomains();
+  updatePreview();
+  saveSession();
+  flashStatus('✓ All thinkers selected');
+});
+
 document.getElementById('refreshBtn').addEventListener('click', () => {
   selectedThinkers.clear();
   selectedModel = "https://claude.ai";
@@ -1556,6 +1731,15 @@ if (restored) {
 }
 
 updatePreview();
+</script>
+<div class="scroll-nav">
+  <button id="scrollTop" title="Go to top">↑</button>
+  <button id="scrollBot" title="Go to bottom">↓</button>
+</div>
+
+<script>
+  document.getElementById('scrollTop').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  document.getElementById('scrollBot').addEventListener('click', () => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }));
 </script>
 </body>
 </html>
